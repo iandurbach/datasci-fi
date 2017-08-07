@@ -140,9 +140,9 @@ We'll mainly use Git through RStudio, which offers a simple Git client. But firs
 18. `git log —-oneline` and find commit you want to return to.
 19. `git reset —-hard <commit_id>`. This removes intermediate commits, so use with caution!
 
-### Trying something new: git branch
+### Trying something new: git branch, git checkout
 1. Say you want to try something new on *demotext.txt*. Can do this with branching, which creates a separate branch to work on, without affecting the master branch. Later on you can merge the branch back with the master or delete the branch without merging.
-2. `git branch test-feature`
+2. `git checkout -b test-feature` (equivalent to `git branch test-feature` plus `git checkout test-feature`)
 3. Make some changes to *demotext.txt*. I added a line "some changes I'm not sure will work!".
 4. `git add demotext.txt`
 5. `git commit -m "testing feature 1"`
@@ -156,9 +156,11 @@ We'll mainly use Git through RStudio, which offers a simple Git client. But firs
 13. Open *demotext.txt* in a text editor, fix it up, then add and commit.
 14. Add a new line to *demotext.txt* "another test feature"", add and commit with message "testing feature 2".
 15. `git checkout master`. Returns to master branch.
-16. Check *demotext.txt*, see "another test feature" does not appear.
+16. Check *demotext.txt*, see none of the test feature text appears.
 17. `git merge test-feature`. Pulls test features into the master by merging with the test branch.
 18. Check *demotext.txt* to see test features have been included.
+19. `git branch -v`. See the last commits on each branch.
+20. `git branch -d test-feature`. Delete the *test-feature* branch.
 
 ### Going online: git push, git pull
 All of what we've done so far has involved local changes. Often you'll want to also save your commits online, in which case you need to "push" your commits to an online hosting platform for Git-based projects (like GitHub). If you want to share your work with others, or work collaboratively, you'll also need GitHub or an equivalent.
@@ -271,7 +273,7 @@ This section assumes there is an existing GitHub repo that you would like to int
 3. Start a new R project using version control as shown before (*File > New Project > Version Control > Git*). Enter the URL you copied in the previous step. You should see the contents of the target repo in your R project.
 4. You can now work on the project and commit and push any changes in exactly the same way described previously. If you're not interested in developments in the target repo, or in collaborating by contributing changes to the target repo, then you don't need the following steps. Often though, you will want to keep your forked repo up-to-date with the target repo (either to keep track of new developments or because you are working together in some way). In that case, read on.
 5. To keep a forked repo up-to-date with the target repo, you first need to configure a remote that points from your repo to the "upsteam" target repo. First check the current remote repository for your fork by opening the terminal, browsing to the project directory and typing `git remote -v`. You should see the URL of your repo.
-6. Add the upstream target repo by typing `git remote add upstream git remote add upstream https://github.com/ORIGINAL_OWNER/ORIGINAL_REPOSITORY.git`. Type `git remote -v` again to check that it has been added.
+6. Add the upstream target repo by typing `git remote add upstream https://github.com/ORIGINAL_OWNER/ORIGINAL_REPOSITORY.git`. Type `git remote -v` again to check that it has been added.
 7. You can now pull any updates in the target repo with `git pull upstream master`
 
 If you are going to be contributing changes to the target repo, you should now create a new branch and do your work there, rather than working directly in the master branch. When you are ready to push your changes upstream to the target repo, you do this by opening a pull request:
