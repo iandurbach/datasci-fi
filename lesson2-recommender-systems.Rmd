@@ -19,8 +19,12 @@ In this lesson we'll:
 3. introduce L2 regularization and bias terms, two ways of improving recommender systems based on matrix factorization.
 4. use these approaches to build a system for recommending movies to users based on their past viewing habits.
 
-### Load required packages and the dataset we created last lesson
+This notebook is based quite closely on the following sources:
 
+* Chapter 22 of Joel Grus' ["Data Science from Scratch: First Principles with Python"](http://shop.oreilly.com/product/0636920033400.do). The (Python) code from the book is [here](https://github.com/joelgrus/data-science-from-scratch).
+* Part of [Lesson 4](http://course.fast.ai/lessons/lesson4.html) of the fast.ai course "Practical Deep Learning for Coders". There's a timeline of the lesson [here](http://wiki.fast.ai/index.php/Lesson_4_Timeline). Code (also in Python) is [here](https://github.com/fastai/courses/tree/master/deeplearning1). 
+
+### Load required packages and the dataset we created last lesson
 
 ```{r}
 library(tidyverse)
@@ -620,3 +624,12 @@ Finally, we again get predicted ratings for one user:
 # check predictions for one user
 rbind(round(predicted_ratings[1,],1), as.numeric(ratings_wide[1,]))
 ```
+
+## Exercises
+
+There are a few places in the notebook where an exercise is indicated. Specifically:
+
+1. Adapt the pairwise similarity function so that it doesn't use loops.
+2. Implement a k-nearest-neighbours version of item-based collaborative filtering.
+3. Adapt the `recommender_accuracy()` function so that it can be used with an arbitrary number of users and movies.
+4. Experiment with the optimizers used in the matrix factorization collaborative filter.
