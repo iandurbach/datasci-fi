@@ -1,0 +1,328 @@
+---
+title: "Lesson 3 // Web scraping"
+author: ""
+date: ""
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      tidy.opts=list(width.cutoff=60),
+                      tidy=TRUE)
+```
+
+Web scraping is the process of extracting data from websites. It can be done manually, but typically when we talk of web scraping we mean gathering data from websites by automated means. Web scraping involves two distinct processes: fetching or downloading the web page, and extracting data from it. In this lesson we introduce the **rvest** package, which provides various web scraping functions. 
+
+In this lesson we'll:
+
+1. introduce the SelectorGadget tool and show how to use it to identify the parts of a webpage we want.
+2. use **rvest**'s key functions - `read_html()`, `html_nodes()`, and `html_text()` - to scrape data from the web.
+3. see how to scrape data tables from the web.
+4. use `html_attr()` to get HTML nodes of a particular type, like hyperlinks.
+5. use what we've learned to build two larger examples, scraping property data and movie reviews.
+
+Web scraping involves working with HTML files, the language used to construct web pages. The better you know HTML, the easier web scraping will be and the more you can do. That said, this notebook is written as a practical "how to" guide to doing web scraping in R, and tries to get you up and running as quickly as possible. We introduce bits and pieces of HTML as needed, but do not cover these from first principles or in great detail. There is a nice basic introduction to HTML [here](http://www.simplehtmlguide.com/). 
+
+Nevertheless, it will be useful to have a rough idea how everything fits together, which is summarised below:
+
+* Websites are written using **HTML** (Hypertext Markup Language), a markup programming language. A web page is basically an HTML file. An HTML file is a plain-text file in which the text is written using the HTML language i.e. contains HTML commands, content, etc. HTML files can be linked to one another, which is how a web site is put together.
+
+* An HTML file, and hence a web page, consists of two main parts: HTML **tags** and content. HTML tags are the parts of a web page that define how content is formatted and displayed in a web browser. Its easiest to explain with a small example. Below is a minimal HTML file: the tags are the commands within angle brackets e.g. `<head>`. Try copying the text below to a text editor, save as .html, and open in your browser. Tags can be customised with **tag attributes**.
+
+---
+```<html>
+ <head>
+  <title>A simple webpage</title>
+ </head>
+ <body>
+
+  Some content. More <b>very important</b> content.
+
+ </body>
+</html>```
+---
+
+* CSS is **Cascading Style Sheets**, a "style sheet language". A style sheet language is a programming language that controls how certain kinds of documents are structured. CSS is a style sheet language for markup documents like those written using HTML. Style sheets define things like the colour and layout of text and other HTML tags. Separating presentation from content is often useful e.g. multiple HTML pages can share formatting through a shared CSS (.css) file.
+
+* A CSS file is written as a set of rules. Each rule consists of a **selector** and a declaration. The CSS selector points to the HTML element the declaration refers to. The declaration contains instructions about how the HTML element identified by the CSS selector should be presented. CSS selectors identify HTML elements by matching tags and tag attributes. There's a fun tutorial on CSS selectors [here](http://flukeout.github.io/).
+
+* **rvest** uses CSS selectors to identify the parts of the web page to scrape.
+
+> Please note! Web scraping invariably involves copying data, and thus copyright issues are often involved. Beyond that, automated web scraping software can process data much more quickly that manual web users, placing a strain on host web servers. Scraping may also be against the terms of service of some websites. The bottom line is that the ethics of web scraping is not straightforward, and is evolving. There is lots of useful information on the web about these issues, for example [here](https://medium.com/towards-data-science/ethics-in-web-scraping-b96b18136f01), [here](http://gijn.org/2015/08/12/on-the-ethics-of-web-scraping-and-data-journalism/), and [here](http://gijn.org/2015/08/12/on-the-ethics-of-web-scraping-and-data-journalism/) (reading up on these is one of the exercises at the end of the notebook). 
+
+---
+
+First we load the packages we'll need in this workbook.
+
+
+```{r}
+library(rvest)
+library(tidyverse)
+library(stringr)
+```
+
+## Example 1: A simple example to illustrate the use of Selector Gadget
+
+In this example we'll visit the [Eyewitness News](http://ewn.co.za) webpage and use the **SelectorGadget** tool to find the CSS selectors for headlines . Then we'll use the **rvest** package to scrape the headings and save them as strings in R.
+
+First, make sure you've got the SelectorGadget tool available in your web browser's toolbar. Go to http://selectorgadget.com/ and find the link that says "drag this link to your bookmark bar": do that. You only need to do this once. 
+
+Now let's visit the [Eyewitness News](http://ewn.co.za) webpage. Click on the SelectorGadget tool and identify the CSS selectors for headlines (should be `.article-short h4, h1`, although this may change with time). I'll show you how to do this in class, or follow the tutorial on the SelectorGadget website.
+
+Finally, let's switch over to R and scrape the headlines. 
+
+We first read in the webpage using `read_html`. This simply reads in an HTML document, which can be from a url, a file on disk or a string. It returns an XML (another markup language) document.
+
+
+```{r}
+ewn_page <- read_html("http://ewn.co.za/")
+ewn_page
+```
+
+We extract relevant information from the document with `html_nodes`. This returns a set of XML element nodes, each one containing the tag and contents (e.g. text) associated with the specified CSS selectors:
+
+
+```{r}
+ewn_elements <- html_nodes(x = ewn_page, css = ".article-short h4 , h1")
+ewn_elements
+```
+
+To get just the text inside the element nodes we use `html_text`, with `trim = TRUE` to clean up whitespace characters.
+
+
+```{r}
+ewn_text <- html_text(ewn_elements, trim = TRUE) 
+as.tibble(ewn_text)
+```
+
+The table above contains some stuff we don't want (like [WATCH]). We'll look at ways to clean up text later.
+
+## Example 2: Scraping tables
+
+One especially useful form of scaping is getting tables containing data from websites. This example shows you how to do that. 
+
+We'll use the table on [this ESPN cricinfo webpage](http://stats.espncricinfo.com/ci/engine/records/averages/batting.html?class=1;id=2017;type=year), which contains 2017 test cricket batting averages. Before running the code below, visit the webpage and use SelectorGadget to identify the CSS selector you need. Also familiarise yourself with the table, just so you know what to expect.
+
+First, read the webpage as before:
+
+
+```{r}
+cric_page <- read_html("http://stats.espncricinfo.com/ci/engine/records/averages/batting.html?class=1;id=2017;type=year")
+```
+
+Extract the table element(s) with `html_nodes()`.
+
+
+```{r}
+cric_elements <- html_nodes(x = cric_page, css = "table")
+```
+
+View the extracted elements, and see we only want the first one.
+
+
+```{r}
+cric_elements
+```
+
+Use `html_table()` to extract the tables inside the first element of `cric_elements`.
+
+
+```{r}
+cric_table <- html_table(cric_elements[[1]])
+head(cric_table)
+```
+
+We can also use the pipe for this. Note the use of `.[[i]]`, which is the operation "extract the *i*-th element".
+
+
+```{r}
+cric_table_piped <- cric_page %>% html_nodes("table") %>% .[[1]] %>%  html_table() 
+head(cric_table_piped)
+```
+
+# Example 3: Scraping house property data
+
+This is a more advanced example where we scrape data on houses for sale in a particular area of interest. 
+
+The landing page for a suburb shows summaries for the first 20 houses. At the bottom of the page are links to a further pages, each containing 20 house summaries. First we read in the landing page and identify *all* hyperlinks on that page.
+
+
+```{r}
+suburb <- read_html("https://www.property24.com/for-sale/fish-hoek/cape-town/western-cape/9074")
+suburb_links <- suburb %>% html_nodes("a") %>% html_attr("href") 
+print(suburb_links)
+```
+
+Next, we need to identify just those hyperlinks that load pages with house summaries (I'll call these "summary pages"). We do this by matching pattern with regular expressions.
+
+
+```{r}
+suburb_pages <- str_subset(suburb_links,"(http).*(for-sale).*(9074)")
+suburb_pages
+```
+
+For each of the summary pages, we extract the hyperlinks that lead to the full house ads
+
+
+```{r}
+house_links <- c()
+for(i in suburb_pages){
+  suburb_i <- read_html(i)
+  suburb_i_links <- suburb_i %>% html_nodes("a") %>% html_attr("href") 
+  house_links_i <- str_subset(suburb_i_links,"(for-sale).*(9074/)[0-9]")
+  house_links <- c(house_links, house_links_i)
+}
+# remove any duplicates and reorder
+house_links <- sample(unique(house_links))
+```
+
+
+```{r}
+house_links
+```
+
+We now read each of those pages and extract the data we want.
+
+
+```{r}
+house_data <- data.frame()
+for(i in house_links[1:3]){   # more than 3 and you get blocked
+  
+      # read house ad html
+  house <- read_html(paste("https://www.property24.com",i, sep=""))
+  
+      # get the ad text 
+  ad <- house %>% html_nodes(css = ".js_readMore") %>% html_text(trim = T)
+
+    # get house data
+  price <- house %>% html_nodes(css = ".p24_price") %>% html_text(trim = TRUE)
+  erfsize <- house %>% html_nodes(css = ".dropdown-toggle span") 
+  nbeds <- house %>% html_nodes(css = ".p24_text:nth-child(2)") %>% html_text(trim = TRUE) %>% as.numeric()
+  nbaths <- house %>% html_nodes(css = ".p24_text:nth-child(5)") %>% html_text(trim = TRUE) %>% as.numeric()
+  ngar <- house %>% html_nodes(css = ".p24_text:nth-child(8)") %>% html_text(trim = TRUE) %>% as.numeric()
+
+    # if couldn't find data on webpage, replace with NA
+  price <- ifelse(length(price) > 0, price, NA)
+  erfsize <- ifelse(length(erfsize) > 0, html_text(erfsize, trim = TRUE), NA)
+  nbeds <- ifelse(length(nbeds) > 0, nbeds, NA)
+  nbaths <- ifelse(length(nbaths) > 0, nbaths, NA)
+  ngar <- ifelse(length(ngar) > 0, ngar, NA)
+  
+    # store results
+  this_house <- data.frame(price = price, erfsize = erfsize, nbeds = nbeds, nbaths = nbaths, ngar = ngar, ad = ad)
+  house_data <- rbind.data.frame(house_data,this_house)
+  
+    # random wait avoids excessive requesting
+  Sys.sleep(sample(seq(10, 30, by=1), 1))
+  
+}
+```
+
+View the data
+
+
+```{r}
+house_data
+```
+
+# Example 4: Getting movie reviews
+
+
+```{r}
+load("data/movielens-small.RData")
+load("output/recommender.RData")
+# make into a tibble
+links <- as.tibble(links)
+head(links)
+```
+
+The *links* data frame provides identifiers for each movie for three different movie datasets: [MovieLens](https://movielens.org), [IMDb](http://www.imdb.com/), and [The Movie Database](https://www.themoviedb.org). This gives us a way of looking up reviews for a particular *movieId* we are interested in on either IMDb or The Movie Database.
+
+IMDb links are 7 characters long, so we need to add leading zeros in some cases.
+
+
+```{r}
+links$imdbId <- sprintf("%07d",links$imdbId)
+```
+
+Let's extract just the movies that we used to build our recommender systems in the last lesson, and get the IMDB identifiers for those movies.
+
+
+```{r}
+movies_to_use <- unique(ratings_red$movieId)
+imdbId_to_use <- links %>% filter(movieId %in% movies_to_use) 
+```
+
+Next we need to know a little more about how reviews are displayed on IMDb. Firstly, a certain number of reviews are shown per page, as in the property example, so we need a way to handle that. Secondly, we need to know the CSS selector for the review text we want to scrape.
+
+
+```{r}
+reviews <- data.frame()
+
+# just get the first two movies to save time
+for(j in 1:2){
+
+  this_movie <- imdbId_to_use$imdbId[j]
+
+    # just get the first 50 reviews
+  for(i in c(0, seq(10, 50, 10))) {
+    link <- paste0("http://www.imdb.com/title/tt",this_movie,"/reviews?start=",i)
+    movie_imdb <- read_html(link)
+    
+    # Used SelectorGadget as the CSS Selector
+    imdb_review <- movie_imdb %>% html_nodes("#pagecontent") %>%
+      html_nodes("div+p") %>%
+      html_text()
+        
+    this_review <- data.frame(imbdId = this_movie, review = imdb_review)
+    reviews <- rbind.data.frame(reviews, this_review)
+  }
+  
+}
+
+reviews <- as.tibble(reviews)
+```
+
+We'll now look in a bit more detail on working with text. Let's look at the first review.
+
+
+```{r}
+review1 <- as.character(reviews$review[1])
+review1
+```
+
+The first thing we can do is remove references to `\r` and `\n`, which indicate carriage returns and new lines respectively. We do this with a call to `str_replace_all()` and a "regular expression", a way of describing patterns in strings. We'll look at regular expressions in more detail in the next workbook.
+
+
+```{r}
+review1_nospace <- str_replace_all(review1, "[\r\n]", " ")
+review1_nospace
+```
+
+We can remove punctuation in a very similar way. Here `:alnum:` refers to any alphanumeric character, equivalent to `[A-Za-z0-9]`. In this context `^` means negation, so we're removing anything that's not alphanumeric (replacing it with nothing). 
+
+
+```{r}
+review1_nopunc <- str_replace_all(review1_nospace, "[^[:alnum:] ]", "")
+review1_nopunc
+```
+
+Finally we can convert everything to lowercase. Note that there are still some problems we'd like to fix up, most often when two words get concatenated (e.g. "charactertremendous" about half-way through the review). Getting text totally clean can be hard work.
+
+
+```{r}
+review1_clean <- tolower(review1_nopunc)
+review1_clean
+```
+
+## Exercises
+
+> Please note I haven't tried these myself yet, so I am not certain that the exercises will "work". If you run into problems let me know!
+
+1. The [Freakonomics Radio Archive](http://freakonomics.com/archive/) contains all previous Freakonomics podcasts. Scrape the titles, dates and descriptions, and download URLs of all the podcasts and store them in a dataframe (see if you can download all the medically-themed podcasts).
+
+2. [Decanter](http://www.decanter.com/) magazine provides one of the world's best known wine ratings. Scrape the tasting notes, scores, and prices for their South African white wines (or whatever subset you choose). 
+
+3. Think of your own scraping example - a website you think contains useful or interesting information - and put together your own tutorial like one of those above.
+
+4. Web scraping does bring with it some ethical concerns. Its important to read about these and formulate your own opinion and approach, starting for example [here](https://medium.com/towards-data-science/ethics-in-web-scraping-b96b18136f01), [here](http://gijn.org/2015/08/12/on-the-ethics-of-web-scraping-and-data-journalism/), and [here](http://gijn.org/2015/08/12/on-the-ethics-of-web-scraping-and-data-journalism/).
