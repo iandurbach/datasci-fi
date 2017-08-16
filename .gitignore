@@ -1,5 +1,6 @@
-.Rproj.user
-.Rhistory
 .RData
+.Rhistory
+data/movielens-small.RData
+.Rproj.user
 .Ruserdata
 *.zip

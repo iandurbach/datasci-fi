@@ -1,0 +1,626 @@
+---
+title: " Lesson 2 // Recommender systems"
+author: ""
+date: ""
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this lesson we'll:
+
+1. introduce recommender systems based on collaborative filtering
+2. build recommender systems based on various kinds of collaborative filtering
+    + user-based collaborative filtering
+    + item-based collaborative filtering
+    + matrix factorization
+3. introduce L2 regularization and bias terms, two ways of improving recommender systems based on matrix factorization.
+4. use these approaches to build a system for recommending movies to users based on their past viewing habits.
+
+### Load required packages and the dataset we created last lesson
+
+
+```{r}
+library(tidyverse)
+
+load("output/recommender.RData")
+```
+
+We need to convert the data to a matrix form or else some the later functions we use will give an error (see what happens if you don't make the change)
+
+
+```{r}
+sorted_my_users <- as.character(unlist(viewed_movies[,1]))
+viewed_movies <- as.matrix(viewed_movies[,-1])
+row.names(viewed_movies) <- sorted_my_users
+```
+
+## User-based collaborative filtering
+
+### The basic idea behind user-based collaborative filtering
+
+A really simple recommender system would just recommend the most popular movies (that a user hasn't seen before). This information is obtained by summing the values of each column of *viewed movies*
+
+
+```{r}
+sort(apply(viewed_movies,2,sum),decreasing = T)
+```
+
+This approach has an intuitive appeal but is pretty unsophisticated (everyone gets the same recommendations, barring the filtering out of seen movies!) In other words, everyone's vote counts the same.
+
+User-based CF extends the approach by changing how much each person's vote counts. Specifically, when recommending what I should watch next, a user-based CF system will upweight the votes of people that are "more similar" to me. In this context "similar" means "has seen many of the same movies as me". You can think of this as replacing the 1's in the *viewed_movies* matrix will a number that increases with similarity to the user we're trying to recommend a movie to.
+
+There are lots of different similarity measures. The one we'll use is called cosine similarity and is widely used, but search online for others and try them out.
+
+
+```{r}
+# function calculating cosine similarity
+cosine_sim <- function(a,b){crossprod(a,b)/sqrt(crossprod(a)*crossprod(b))}
+```
+
+Cosine similarity lies between 0 and 1 inclusive and increases with similarity. Here are a few test cases to get a feel for it:
+
+
+```{r}
+# maximally similar
+x1 <- c(1,1,1,0,0)
+x2 <- c(1,1,1,0,0)
+cosine_sim(x1,x2)
+```
+
+
+```{r}
+# maximally dissimilar
+x1 <- c(1,1,1,0,0)
+x2 <- c(0,0,0,1,1)
+cosine_sim(x1,x2)
+```
+
+
+```{r}
+# but also
+x1 <- c(1,1,0,0,0)
+x2 <- c(0,0,0,1,1)
+cosine_sim(x1,x2)
+```
+
+
+```{r}
+# try an example from our data
+as.numeric(viewed_movies[1,]) # user 1's viewing history
+as.numeric(viewed_movies[2,]) # user 2's viewing history
+cosine_sim(viewed_movies[1,], viewed_movies[2,])
+```
+
+Let's get similarities between user pairs. We'll do this with a loop below, because its easier to see what's going, but this will be inefficient and very slow for bigger datasets. As an exercise, see if you can do the same without loops.
+
+
+```{r}
+user_similarities = matrix(0, nrow = 15, ncol = 15)
+for(i in 1:14){
+  for(j in (i+1):15){
+    user_similarities[i,j] <- cosine_sim(viewed_movies[i,], viewed_movies[j,])
+  }
+}
+user_similarities <- user_similarities + t(user_similarities)
+diag(user_similarities) <- 0
+row.names(user_similarities) <- row.names(viewed_movies)
+colnames(user_similarities) <- row.names(viewed_movies)
+```
+
+
+```{r}
+# who are the most similar users to user 149?
+user_similarities["149",]
+```
+
+Let's see if this makes sense from the viewing histories. Below we show user 149's history, together with the user who is most similar to user 149 (user 303) and another user who is very dissimilar (user 236).
+
+
+```{r}
+viewed_movies[c("149","303","236"),]
+```
+
+### Recommending movies for a single user
+
+As an example, let's consider the process of recommending a movie to one user, say user 149. How would we do this with a user-based collaborative filtering system? 
+
+First, we need to know what movies have they already seen (so we don't recommend these).
+
+
+```{r}
+viewed_movies["149",]
+```
+
+The basic idea is now to recommend what's popular by adding up the number of users that have seen each movie, but *to weight each user by their similarity to user 149*. 
+
+Let's work through the calculations for one movie, say Apocalypse Now (movie 2). The table below shows who's seen Apocalypse Now, and how similar each person is to user 149.
+
+
+```{r}
+seen_movie <- viewed_movies[,"Apocalypse Now (1979)"]
+sim_to_user <- user_similarities["149",]
+cbind(seen_movie,sim_to_user)
+```
+
+The basic idea in user-based collaborative filtering is that user 236's vote counts less than user 408's, because user 408 is more similar to user 149 (in terms of viewing history). 
+
+Note that this only means user 236 counts more in the context of making recommendations to user 149. When recommending to users *other than user 149*, user 408 may carry more weight.
+
+We can now work out an overall recommendation score for Apocalypse Now by multiplying together the two elements in each row of the table above, and summing these products (taking the dot product):
+
+
+```{r}
+# overall score for Apocalypse now
+crossprod(viewed_movies[,"Apocalypse Now (1979)"],user_similarities["149",])
+```
+
+Note this score will increase with (a) the number of people who've seen the movie (more 1's in the first column above) and (b) if the people who've seen it are similar to user 1
+
+Let's repeat this calculation for all movies and compare recommendation scores:
+
+
+```{r}
+user_similarities["149",] %*% viewed_movies
+```
+
+To come up with a final recommendation, we just need to remember to remove movies user 149 has already seen, and sort the remaining movies in descending order of recommendation score.
+
+We do that below, after tidying up the results a bit by putting them in a data frame.
+
+
+```{r}
+user_scores <- data.frame(title = colnames(viewed_movies), 
+                          score = as.vector(user_similarities["149",] %*% viewed_movies), 
+                          seen = viewed_movies["149",])
+user_scores %>% filter(seen == 0) %>% arrange(desc(score)) 
+```
+
+Now that we've understood the calculations, let's get recommendations for one more user, 236:
+
+
+```{r}
+# recommendations for user 236
+user_scores <- data.frame(title = colnames(viewed_movies), 
+                          score = as.vector(user_similarities["236",] %*% viewed_movies), 
+                          seen = viewed_movies["236",])
+user_scores %>% filter(seen == 0) %>% arrange(desc(score)) 
+```
+
+### A simple function to generate a user-based CF recommendation for any user
+
+
+```{r}
+# a function to generate a recommendation for any user
+user_based_recommendations <- function(user, user_similarities, viewed_movies){
+  
+  # turn into character if not already
+  user <- ifelse(is.character(user),user,as.character(user))
+  
+  # get scores
+  user_scores <- data.frame(title = colnames(viewed_movies), 
+                            score = as.vector(user_similarities[user,] %*% viewed_movies), 
+                            seen = viewed_movies[user,])
+  
+  # sort unseen movies by score and remove the 'seen' column
+  user_recom <- user_scores %>% 
+    filter(seen == 0) %>% 
+    arrange(desc(score)) %>% 
+    select(-seen) 
+  
+  return(user_recom)
+  
+}
+```
+
+Let's check the function is working by running it on a user we've used before:
+
+
+```{r}
+user_based_recommendations(user = 149, user_similarities = user_similarities, viewed_movies = viewed_movies)
+```
+
+Now do it for all users with `lapply`
+
+
+```{r}
+lapply(sorted_my_users, user_based_recommendations, user_similarities, viewed_movies)
+```
+
+A variant on the above is a *k-nearest-neighbours* approach that bases recommendations *only on k most similar users*. This is faster when there are many users. Try implement this as an exercise.
+
+
+*** TODO: implement this ***
+
+
+## Item-based collaborative filtering
+
+### The basic idea behind item-based collaborative filtering
+
+Item-based collaborative filtering works very similarly to user-based counterpart, but is a tiny bit less intuitive (in my opinion). It is also based on similarities, but similarities between *movies* rather than *users*.
+
+There are two main conceptual parts to item-based collaborative filtering:
+
+1. One movie is similar to another if many of the same users have seen both movies.
+2. When deciding what movie to recommend to a particular user, movies are evaluated on how similar they are to movies *that the user has already seen*.
+
+Let's start by computing the similarities between all pairs of movies. We can reuse the same code we used to compute user similarities, if we first transpose the *viewed_movies* matrix.
+
+
+```{r}
+# transpose the viewed_movies matrix
+movies_user <- t(viewed_movies)
+
+# get all similarities between MOVIES
+movie_similarities = matrix(0, nrow = 20, ncol = 20)
+for(i in 1:19){
+  for(j in (i+1):20){
+    movie_similarities[i,j] <- cosine_sim(viewed_movies[,i], viewed_movies[,j])
+  }
+}
+movie_similarities <- movie_similarities + t(movie_similarities)
+diag(movie_similarities) <- 0
+row.names(movie_similarities) <- colnames(viewed_movies)
+colnames(movie_similarities) <- colnames(viewed_movies)
+```
+
+We can use the result to see, for example, what movies are most similar to "Apocalypse Now":
+
+
+```{r}
+movie_similarities[,"Apocalypse Now (1979)"]
+```
+
+### Recommending movies for a single user
+
+Let's again look at a concrete example of recommending a movie to a particular user, say user 236.
+
+User 236 has seen the following movies:
+
+
+```{r}
+viewed_movies["236",]
+```
+
+Another way of doing the same thing:
+
+
+```{r}
+ratings_red %>% filter(userId == 236) %>% select(userId, title)
+```
+
+We now implement the main idea behind item-based filtering. For each movie, we find out its similarity between that movie and each of the four movies user 236 has seen, and sum up those similarities. The resulting sum is that movie's "recommendation score".
+
+We start by identifying the movies the user has seen:
+
+
+```{r}
+user_seen <- ratings_red %>% 
+        filter(userId == 236) %>% 
+        select(title) %>% 
+        unlist() %>% 
+        as.character()
+```
+
+We then compute the similarities between all movies and these "seen" movies. For example, similarities the first seen movie, *Taxi Driver* are:
+
+
+```{r}
+user_seen[1]
+movie_similarities[,user_seen[1]]
+```
+
+We can do the same for each of the four seen movies or, more simply, do all four at once:
+
+
+```{r}
+movie_similarities[,user_seen]
+```
+
+Each movie's recommendation score is obtained by summing across columns, each column representing a seen movie:
+
+
+```{r}
+apply(movie_similarities[,user_seen],1,sum)
+```
+
+The preceding explanation hopefully makes the details of the calculations clear, but it is quite unwieldy. We can do all the calculations more neatly as:
+
+
+```{r}
+user_scores <- tibble(title = row.names(movie_similarities), 
+                      score = apply(movie_similarities[,user_seen],1,sum),
+                      seen = viewed_movies["236",])
+user_scores %>% filter(seen == 0) %>% arrange(desc(score))
+```
+
+So we'd end up recommending "Minority Report" to this particular user.
+
+Let's repeat the process to generate a recommendation for one more user, user 149:
+
+
+```{r}
+# do for user 149
+user <- "149"
+user_seen <- ratings_red %>% filter(userId == user) %>% select(title) %>% unlist() %>% as.character()
+user_scores <- tibble(title = row.names(movie_similarities), 
+                      score = apply(movie_similarities[,user_seen],1,sum),
+                      seen = viewed_movies[user,])
+user_scores %>% filter(seen == 0) %>% arrange(desc(score))
+```
+
+### A simple function to generate an item-based CF recommendation for any user
+
+
+```{r}
+# a function to generate an item-based recommendation for any user
+item_based_recommendations <- function(user, movie_similarities, viewed_movies){
+  
+  # turn into character if not already
+  user <- ifelse(is.character(user),user,as.character(user))
+  
+  # get scores
+  user_seen <- row.names(movie_similarities)[viewed_movies[user,] == TRUE]
+  user_scores <- tibble(title = row.names(movie_similarities), 
+                        score = apply(movie_similarities[,user_seen],1,sum),
+                        seen = viewed_movies[user,])
+  # sort unseen movies by score and remove the 'seen' column
+  user_recom <- user_scores %>% filter(seen == 0) %>% arrange(desc(score)) %>% select(-seen)
+
+  return(user_recom)
+  
+}
+```
+
+Let's check that its working with a user we've seen before, user 236:
+
+
+```{r}
+item_based_recommendations(user = 236, movie_similarities = movie_similarities, viewed_movies = viewed_movies)
+```
+
+And now do it for all users with `lapply'
+
+
+```{r}
+lapply(sorted_my_users, item_based_recommendations, movie_similarities, viewed_movies)
+```
+
+## Collaborative filtering with matrix factorization 
+
+In this section we're going to look at a different way of doing collaborative filtering, one based on the idea of *matrix factorization*, a topic from linear algebra.
+
+Matrix factorization, also called matrix decomposition, takes a matrix and represents it as a product of other (usually two) matrices. There are many ways to do matrix factorization, and different problems tend to use different methods.
+
+In recommendation systems, matrix factorization is used to decompose the ratings matrix into the product of two matrices. This is done in such a way that the known ratings are matched as closely as possible. 
+
+The key feature of matrix factorization for recommendation systems is that while the ratings matrix is incomplete (i.e. some entries are blank), the two matrices the ratings matrix is decomposed into are *complete* (no blank entries). This gives a straightforward way of filling in blank spaces in the original ratings matrix, as we'll see.
+
+Its actually easier to see the underlying logic and calculations in a spreadsheet setting, so we'll first save the ratings matrix as a .csv file and then jump over to Excel for a bit, before returning to work in R again.
+
+
+```{r}
+# get ratings in wide format
+ratings_wide <- ratings_red %>% 
+  select(userId,title,rating) %>% 
+  complete(userId, title) %>% 
+  spread(key = title, value = rating)
+
+# convert data to matrix form 
+sorted_my_users <- as.character(unlist(ratings_wide[,1]))
+ratings_wide <- as.matrix(ratings_wide[,-1])
+row.names(ratings_wide) <- sorted_my_users
+
+# save as csv for Excel demo
+write.csv(ratings_wide,"output/ratings_for_excel_example.csv")
+```
+
+Now let's set up the same computations in R, which will be faster and easier to generalise beyond a particular size dataset. We start by defining a function that will compute the sum of squared differences between the observed movie ratings and any other set of predicted ratings (for example, ones predicted by matrix factorization). Note the we only count movies that have already been rated in the accuracy calculation.
+
+
+```{r}
+recommender_accuracy <- function(x, observed_ratings){
+    
+  # extract user and movie factors from parameter vector (note x is defined such that 
+  # the first 75 elements are latent factors for users and rest are for movies)
+  user_factors <- matrix(x[1:75],15,5)
+  movie_factors <- matrix(x[76:175],5,20)
+  
+  # get predictions from dot products of respective user and movie factor
+  predicted_ratings <- user_factors %*% movie_factors
+  
+  # model accuracy is sum of squared errors over all rated movies
+  errors <- (observed_ratings - predicted_ratings)^2 
+  accuracy <- sqrt(mean(errors[!is.na(observed_ratings)]))   # only use rated movies
+  
+  return(accuracy)
+}
+```
+
+> **Exercise**: This function isn't general, because it refers specifically to a ratings matrix with 15 users, 20 movies, and 5 latent factors. Make the function general.
+
+We'll now optimize the values in the user and movie latent factors, choosing them so that the root mean square error (the square root of the average squared difference between observed and predicted ratings) is a minimum. I've done this using R's inbuilt numerical optimizer `optim()`, with the default "Nelder-Mead" method. There are better ways to do this - experiment! Always check whether the optimizer has converged (although you can't always trust this), see `help(optim)` for details.
+
+
+```{r}
+set.seed(10)
+# optimization step
+rec1 <- optim(par=runif(175), recommender_accuracy, 
+            observed_ratings = ratings_wide, control=list(maxit=100000))
+rec1$convergence
+rec1$value
+```
+
+The best value of the objective function found by `optim()` after 100000 iterations is 0.258, but note that it hasn't converged yet, so we should really run for longer or try another optimizer! Ignoring this for now, we can extract the optimal user and movie factors. With a bit of work, these can be interpreted and often give useful information. Unfortunately we don't have time to look at this further (although it is similar to the interpretation of principal components, if you are familiar with that).
+
+
+```{r}
+# extract optimal user factors
+user_factors <- matrix(rec1$par[1:75],15,5)
+head(user_factors)
+```
+
+
+```{r}
+# extract optimal movie factors
+movie_factors <- matrix(rec1$par[76:175],5,20)
+head(movie_factors)
+```
+
+Most importantly, we can get **predicted movie ratings** for any user, by taking the appropriate dot product of user and movie factors. Here we show the predictions for user 1:
+
+
+```{r}
+# check predictions for one user
+predicted_ratings <- user_factors %*% movie_factors
+rbind(round(predicted_ratings[1,],1), as.numeric(ratings_wide[1,]))
+```
+
+### Adding L2 regularization
+
+One trick that can improve the performance of matrix factorization collaborative filtering is to add L2 regularization. L2 regularization adds a penalty term to the function that we're trying to minimize, equal to the sum of the L2 norms over all user and movie factors. This penalizes large parameter values. 
+
+We first rewrite the *evaluate_fit* function to make use of L2 regularization:
+
+
+```{r}
+## adds L2 regularization, often improves accuracy
+
+evaluate_fit_l2 <- function(x, observed_ratings, lambda){
+  
+  # extract user and movie factors from parameter vector
+  user_factors <- matrix(x[1:75],15,5)
+  movie_factors <- matrix(x[76:175],5,20)
+  
+  # get predictions from dot products
+  predicted_ratings <- user_factors %*% movie_factors
+  
+  errors <- (observed_ratings - predicted_ratings)^2 
+  
+  # L2 norm penalizes large parameter values
+  penalty <- sum(sqrt(apply(user_factors^2,1,sum))) + sum(sqrt(apply(movie_factors^2,2,sum)))
+  
+  # model accuracy contains an error term and a weighted penalty 
+  accuracy <- sqrt(mean(errors[!is.na(observed_ratings)])) + lambda * penalty
+  
+  return(accuracy)
+}
+```
+
+We now rerun the optimization with this new evaluation function:
+
+
+```{r}
+set.seed(10)
+# optimization step
+rec2 <- optim(par=runif(175), evaluate_fit_l2, 
+            lambda = 3e-3, observed_ratings = ratings_wide, control=list(maxit=100000))
+rec2$convergence
+rec2$value
+```
+
+The best value found is **worse** than before, but remember that we changed the objective function to include the L2 penalty term, so the numbers are not comparable. We need to extract just the RMSE that we're interested in. To do that we first need to extract the optimal parameter values (user and movie factors), and multiply these matrices together to get predicted ratings. From there, its easy to calculate the errors.
+
+
+```{r}
+# extract optimal user and movie factors
+user_factors <- matrix(rec2$par[1:75],15,5)
+movie_factors <- matrix(rec2$par[76:175],5,20)
+
+# get predicted ratings
+predicted_ratings <- user_factors %*% movie_factors
+
+# check accuracy
+errors <- (ratings_wide - predicted_ratings)^2 
+sqrt(mean(errors[!is.na(ratings_wide)]))
+```
+
+Compare this with what we achieved without L2 regularization: did it work? As before, we can extract user and movie factors, and get predictions for any user.
+
+
+```{r}
+# check predictions for one user
+rbind(round(predicted_ratings[1,],1), as.numeric(ratings_wide[1,]))
+```
+
+### Adding bias terms
+
+We've already seen bias terms in the Excel example. Bias terms are additive factors that model the fact that some users are more generous than others (and so will give higher ratings, on average) and some movies are better than others (and so will get higher ratings, on average). 
+
+Let's adapt our evaluation function further to include a bias terms for both users and movies:
+
+
+```{r}
+## add an additive bias term for each user and movie
+
+evaluate_fit_l2_bias <- function(x, observed_ratings, lambda){
+  # extract user and movie factors and bias terms from parameter vector
+  user_factors <- matrix(x[1:75],15,5)
+  movie_factors <- matrix(x[76:175],5,20)
+  # the bias vectors are repeated to make the later matrix calculations easier 
+  user_bias <- matrix(x[176:190],nrow=15,ncol=20)
+  movie_bias <- t(matrix(x[191:210],nrow=20,ncol=15))
+  
+  # get predictions from dot products + bias terms
+  predicted_ratings <- user_factors %*% movie_factors + user_bias + movie_bias
+  
+  errors <- (observed_ratings - predicted_ratings)^2 
+  
+  # L2 norm penalizes large parameter values (note not applied to bias terms)
+  penalty <- sum(sqrt(apply(user_factors^2,1,sum))) + sum(sqrt(apply(movie_factors^2,2,sum)))
+  
+  # model accuracy contains an error term and a weighted penalty 
+  accuracy <- sqrt(mean(errors[!is.na(observed_ratings)])) + lambda * penalty
+  
+  return(accuracy)
+}
+```
+
+Again, rerun the optimization:
+
+
+```{r}
+set.seed(10)
+# optimization step (note longer parameter vector to include bias)
+rec3 <- optim(par=runif(220),evaluate_fit_l2_bias,
+              observed_ratings = ratings_wide, lambda = 3e-3, control=list(maxit=100000))
+rec3$convergence
+rec3$value
+```
+
+This value isn't comparable to either of the previous values, for the same reason as before: the objective function has changed to include bias terms. Extracting just the RMSE:
+
+
+```{r}
+# extract optimal user and movie factors and bias terms
+user_factors <- matrix(rec3$par[1:75],15,5)
+movie_factors <- matrix(rec3$par[76:175],5,20)
+user_bias <- matrix(rec3$par[176:190],nrow=15,ncol=20)
+movie_bias <- t(matrix(rec3$par[191:210],nrow=20,ncol=15))
+
+# get predicted ratings
+predicted_ratings <- user_factors %*% movie_factors + user_bias + movie_bias
+
+# check accuracy
+errors <- (ratings_wide - predicted_ratings)^2 
+sqrt(mean(errors[!is.na(ratings_wide)]))
+```
+
+This is indeed an improvement over what we've seen before (at least, for the parameter settings above!). 
+
+We can examine and interpret the user or movie latent factors, or bias terms, if we want to. Below we show the movie bias terms, which give a reasonable reflection of movie quality (with some notable exceptions!)
+
+
+```{r}
+data.frame(movies = colnames(viewed_movies), bias = movie_bias[1,]) %>% arrange(desc(bias))
+```
+
+Finally, we again get predicted ratings for one user:
+
+
+```{r}
+# check predictions for one user
+rbind(round(predicted_ratings[1,],1), as.numeric(ratings_wide[1,]))
+```
