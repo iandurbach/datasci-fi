@@ -19,7 +19,7 @@ In this lesson we'll:
   + arrange
   + mutate
   + summarise
-  + grouped_by
+  + group_by
   
 3. introduce the pipe operator `%>%`
 4. see a few nice things you can do by combining dplyr verbs (grouped filters and mutates, for example)
@@ -37,6 +37,15 @@ In this lesson we'll:
 
 Download the file "ml-latest-small.zip" from https://grouplens.org/datasets/movielens/ and unzip it to the *data* directory in your main project folder (make a folder called *data* if you haven't already). You should see four csv files: `links.csv`, `movies.csv`, `ratings.csv`, and `tags.csv`.
 
+```{r}
+dir.create("data")
+download.file(
+  url = "http://files.grouplens.org/datasets/movielens/ml-latest-small.zip", 
+  destfile = "data/ml-latest-small.zip"
+)
+unzip("data/ml-latest-small.zip", exdir = "data")
+```
+
 First let's save the data we downloaded as an .RData object. .RData objects are smaller than csv, plus we can save all four csvs in a single .RData object that we can call with a single call to `load` the dataset later on.
 
 ```{r}
@@ -47,14 +56,14 @@ ratings <- read.csv("data/ml-latest-small/ratings.csv")
 tags <- read.csv("data/ml-latest-small/tags.csv")
 
 # save as .RData
-save(links,movies,ratings,tags,file="data/movielens-small.RData")
+save(links, movies, ratings, tags, file = "data/movielens-small.RData")
 
-# check that its worked
-rm(list=ls())
+# check that it's worked
+rm(list = ls())
 load("data/movielens-small.RData")
 ```
 
-You'll only need to do the above part once so, once you've got the data saved as .RData, start running the notebook from here.
+You'll only need to do the above part once, so once you've got the data saved as .RData, start running the notebook from here.
 
 ## Loading the tidyverse
 
@@ -70,7 +79,7 @@ Load the MovieLens data
 load("data/movielens-small.RData")
 ```
 
-Tibbles are a special kind of dataframe that work well with tidyverse packages ("in the tidyverse" in tidyversese). 
+Tibbles are a special kind of dataframe that work well with tidyverse packages ("in the tidyverse"). 
 
 
 ```{r}
@@ -78,14 +87,14 @@ Tibbles are a special kind of dataframe that work well with tidyverse packages (
 ratings <- as.tibble(ratings)
 ```
 
-A nice feature of tibbles is that if you display them in the console (by typing `ratings`, for example) only first few rows and columns are shown. Unfortunately this doesn't carry over to jupyter notebook, so I need to explicitly say `print(ratings)` or all the rows are shown.
+A nice feature of tibbles is that if you display them in the console (by typing `ratings`, for example) only the first few rows and columns are shown. Unfortunately this doesn't carry over to jupyter notebook, so I need to explicitly say `print(ratings)` or all the rows are shown.
 
 
 ```{r}
 print(ratings)
 ```
 
-Explore some of the variables
+Explore some of the variables:
 
 
 ```{r}
@@ -148,7 +157,7 @@ The pipe operator `%>%` is a very useful way of chaining together multiple opera
 
 You read the code from left to right: Start with *data*, apply some operation (operation 1) to it, get a result, and then apply another operation (operation 2) to that result, to generate another result (the final result, in this example). A useful way to think of the pipe is as similar to "then".
 
-The main goal of the pipe is to make code easier, by focusing on the transformations rather than on what is being transformed. Usually this is the case, but its also possible to get carried away and end up with a huge whack of piped statements. Deciding when to break a block up is an art best learned by experience. 
+The main goal of the pipe is to make code easier, by focusing on the transformations rather than on what is being transformed. Usually this is the case, but it's also possible to get carried away and end up with a huge whack of piped statements. Deciding when to break a block up is an art best learned by experience. 
 
 
 ```{r}
@@ -156,7 +165,7 @@ The main goal of the pipe is to make code easier, by focusing on the transformat
 ratings %>% filter(userId == 1)
 ```
 
-The main usefulness of the pipe is when combining multiple operations
+The main usefulness of the pipe is when combining multiple operations:
 
 
 ```{r}
@@ -173,7 +182,7 @@ ratings %>% filter(userId == 1 & rating > 3)
 
 ## Arranging rows with `arrange()`
 
-Ordering user 1's "liked" movies in descending order of rating (note the use of `desc`)
+Ordering user 1's "liked" movies in descending order of rating (note the use of `desc`):
 
 
 ```{r}
@@ -184,17 +193,17 @@ Subsequent arguments to `arrange()` can be used to arrange by multiple columns. 
 
 
 ```{r}
-arrange(u1_likes, desc(rating),timestamp)
+arrange(u1_likes, desc(rating), timestamp)
 ```
 
-We can also use the pipe to do the same thing
+We can also use the pipe to do the same thing:
 
 
 ```{r}
 u1_likes %>% arrange(desc(rating))
 ```
 
-Finally, here's an example of combining filter and arrange operations with the pipe
+Finally, here's an example of combining filter and arrange operations with the pipe:
 
 
 ```{r}
@@ -207,17 +216,17 @@ Select is a bit like `filter()` for columns. The syntax is straightforward, the 
 
 
 ```{r}
-select(u1_likes,title,rating)
+select(u1_likes, title, rating)
 ```
 
-To exclude variables just put a minus sign in front of them
+To exclude variables just put a minus sign in front of them:
 
 
 ```{r}
-select(u1_likes,-userId,-timestamp)
+select(u1_likes, -userId, -timestamp)
 ```
 
-You can also use `select()` to reorder variables. A useful helpful function here is `everything()`.
+You can also use `select()` to reorder variables. A useful function here is `everything()`.
 
 
 ```{r}
@@ -237,7 +246,7 @@ Mutating operations add a new column to a dataframe. Here's a trivial example to
 mutate(u1_likes, this_is = "stupid")  
 ```
 
-A more useful use of mutate is to construct new variable based on existing variables. This is the way that `mutate` is almost always used.
+A more useful use of mutate is to construct a new variable based on existing variables. This is the way that `mutate` is almost always used.
 
 
 ```{r}
@@ -249,9 +258,9 @@ We can also use the pipe for mutating operations. Hopefully you're getting used 
 
 ```{r}
 ratings %>% 
-mutate(like = ifelse(rating > 3, 1, 0)) %>% 
-filter(userId == 1) %>% 
-select(like, everything()) 
+  mutate(like = ifelse(rating > 3, 1, 0)) %>% 
+  filter(userId == 1) %>% 
+  select(like, everything()) 
 ```
 
 ## Aggregating over rows with `summarise()`
@@ -276,8 +285,8 @@ summarise(u1, mean = mean(rating), likes = sum(rating > 3))
 
 
 ```{r}
-# with na.rm = T
-summarise(u1, mean = mean(rating, na.rm = T), likes = sum(rating > 3, na.rm = T))
+# with na.rm = TRUE
+summarise(u1, mean = mean(rating, na.rm = TRUE), likes = sum(rating > 3, na.rm = TRUE))
 ```
 
 `summarise()` is most useful when combined with `group_by()`, which imposes a grouping structure on a data frame. After applying `group_by()`, subsequent dplyr verbs will be applied to individual groups, basically repeating the code for each group. That means that `summarise()` will calculate a summary for each group:
@@ -298,7 +307,7 @@ ratings %>%
 group_by(userId) %>% 
 summarize(count = n()) %>% 
 arrange(desc(count)) %>% 
-head(20) %>%     # take first two rows
+head(10) %>%     # take first ten rows
 t()  # transpose 
 ```
 
@@ -309,6 +318,7 @@ ratings %>% group_by(userId) %>% summarize(count = n()) %>% head(10)
 ```
 
 ## Other uses of `grouped_by()`: grouped filters and grouped mutates
+
 While you'll probably use `group_by()` most often with `summarise()`, it can also be useful when used in conjunction with `filter()` and `mutate()`. Grouped filters perform the filtering within each group. Below we use it to extract each user's favourite movie (or movies, if there's a tie).
 
 
@@ -323,9 +333,9 @@ Here we use a grouped mutate to standardise each user's ratings so that they hav
 ```{r}
 # example of a grouped mutate
 ratings %>% 
-group_by(userId) %>%
-mutate(centered_rating = rating - mean(rating)) %>% 
-select(-movieId,-timestamp,-genres)
+  group_by(userId) %>%
+  mutate(centered_rating = rating - mean(rating)) %>% 
+  select(-movieId, -timestamp, -genres)
 ```
 
 ## Putting it all together: extracting a sample set of reviews for Lesson 2
@@ -356,8 +366,8 @@ ratings_red <- ratings %>% filter(userId %in% my_users, movieId %in% my_movies)
 # and check there are 15 users and 20 movies in the reduced dataset
 n_users <- length(unique(ratings_red$userId))
 n_movies <- length(unique(ratings_red$movieId))
-print(paste("number of users is",n_users))
-print(paste("number of movies is",n_movies))
+print(paste("number of users is", n_users))
+print(paste("number of movies is", n_movies))
 ```
 
 Let's see what the 20 movies are:
@@ -371,7 +381,7 @@ However, note all the movie titles are still being kept:
 
 
 ```{r}
-head(levels(ratings_red$title))
+head(levels(ratings_red$title), 10)
 ```
 
 This actually isn't what we want, so let's drop the ones we won't use.
@@ -395,7 +405,7 @@ Here's the corrected version:
 
 
 ```{r}
-ratings_red %>% select(userId,title,rating) %>% spread(key = title, value = rating)
+ratings_red %>% select(userId, title, rating) %>% spread(key = title, value = rating)
 ```
 
 Finally, since we just want to know who has seen what, we replace all NAs with 0 and all other ratings with 1:
@@ -403,10 +413,9 @@ Finally, since we just want to know who has seen what, we replace all NAs with 0
 
 ```{r}
 viewed_movies <- ratings_red %>% 
-  select(userId,title,rating) %>% 
   complete(userId, title) %>% 
-  mutate(seen = ifelse(is.na(rating),0,1)) %>% 
-  select(userId,title,seen) %>% 
+  mutate(seen = ifelse(is.na(rating), 0, 1)) %>% 
+  select(userId, title, seen) %>% 
   spread(key = title, value = seen)
 ```
 
@@ -414,13 +423,14 @@ We could have got this more simply with a call to `table()`, which creates a two
 
 
 ```{r}
-table(ratings_red$userId,ratings_red$title)
+table(ratings_red$userId, ratings_red$title)
 ```
 
 Finally, we save our output for use in the next lesson!
 
 
 ```{r}
+dir.create("output")
 save(ratings_red, viewed_movies, file = "output/recommender.RData")
 ```
 
@@ -468,7 +478,7 @@ inner_join(y,x)
 
 The other three joints are all **outer joins**: they keep observations that appear in *at least one* of the tables.
 
-A **left join** keeps all observations in x.
+A **left join** keeps all observations from the left table (first argument).
 
 
 ```{r}
@@ -480,7 +490,7 @@ left_join(x,y)
 left_join(y,x)
 ```
 
-A **right join** keeps all observations in y.
+A **right join** keeps all observations from the right table (second argument).
 
 
 ```{r}
@@ -488,7 +498,7 @@ A **right join** keeps all observations in y.
 right_join(x,y)
 ```
 
-A **full join** keeps observations in x or y.
+A **full join** keeps all observations from the left and right table.
 
 
 ```{r}
@@ -523,14 +533,14 @@ In this case a left join by the *movieId* key copies across the movie title info
 
 
 ```{r}
-print(left_join(ratings, movies, by = "movieId") %>% select(title,everything()))
+print(left_join(ratings, movies, by = "movieId") %>% select(title, everything()))
 ```
 
 ### Filtering joins: `semi_join`, `anti_join`
 
 The last two joins we look at are **filtering joins**. These match observations in two tables, but do not add variables. There are two types of filtering joins: semi-joins and anti-joins.
 
-A **semi join** keeps all observations in x that appear in y (note variables are from x only),
+A **semi join** keeps all observations from the first table that appear in the second (note variables are from the first table only):
 
 
 ```{r}
@@ -542,7 +552,7 @@ semi_join(x,y)
 semi_join(y,x)
 ```
 
-while an **anti join** *drops* all observations in x that appear in y (note variables are from x only).
+while an **anti join** *drops* all observations from the first table that appear in the second table (note variables are from the first table only).
 
 
 ```{r}

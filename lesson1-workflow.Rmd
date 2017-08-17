@@ -20,7 +20,7 @@ The workflow we'll use for much of this course is based on a combination of the 
 
 * **Markdown** and **R Markdown** for communicating our work to the outside world. 
 
-Each of these can be used in their own right, but their real value comes from using them together. The reasons for this will become clear as we go, but (briefly): RStudio provides a really easy way to integrate R Projects with Github; Github automatically displays Markdown files as readable HTML (or HTML-like) documents, and R Markdown files are basically the formatted output of your R scripts plus whatever else you'd like to add, like explanatory text, code, etc. That means that once everything is set up nicely, your final document can more-or-less write itself as you progress through your analysis. 
+Each of these can be used in their own right, but their real value comes from using them together. The reasons for this will become clear as we go, but (briefly): RStudio provides a really easy way to integrate R Projects with GitHub; GitHub automatically displays Markdown files as readable HTML (or HTML-like) documents, and R Markdown files are basically the formatted output of your R scripts plus whatever else you'd like to add, like explanatory text, code, etc. That means that once everything is set up nicely, your final document can more-or-less write itself as you progress through your analysis. 
 
 # R Projects
 
@@ -34,13 +34,13 @@ This quickly becomes cumbersome: for one thing, you need to retype your commands
 
 R Projects are a way to keep all files associated with a project in one place. Most people will do this themselves, in some way. For example, when I used to start a project, I would start a new folder with the name of the project, say `bank_fraud_detection`, then have a few subfolders with stuff I knew I would end up with: `past_papers`, `code`, `results`. Essentially, RStudio just provides support for this kind of structured process with its projects. Added bonuses (and the real reasons for using projects, rather than just organising the script files yourself) are:
 
-* Easy integration with Github
+* Easy integration with GitHub
 * No need to set working directories (you only need relative paths)
 * You can see any mess you've made while working in RStudio. This is a surprisingly powerful motivation to keep things neat and organised. 
 
 Starting a project in RStudio is trivial, although it may take a little while to get used to using them, depending on how you work and how familiar with R you are.
 
-From RStudio, select *File* then *New project*. For now, we'll just set up a basic project, with no Github integration, just to get started.
+From RStudio, select *File* then *New project*. For now, we'll just set up a basic project, with no GitHub integration, just to get started.
 
 ```{r, echo=FALSE, out.width="290px"}
 knitr::include_graphics("figures/lesson1/proj1.png")
@@ -70,7 +70,7 @@ Let's first look at how *Git*, *GitHub*, and a *Git client* fit together:
 
 **Git**: Git is a version control system -- a way of keeping track of changes to a file over time (like "track changes" in Microsoft Word, for example). Originally used for source code, Git is now used by data scientists to track a set of files associated with a project over time. Git calls the set of files a *repository*, and it can contain data files, code, documents.
 
-**Github**: Git is a program that lives on your computer. You could, if you wanted to, only ever use it locally to back-up your files. Most people though, use Git as a way to collaborate on projects, and share code and associated files. That needs some way of hosting Git-based projects on the internet, which is where *GitHub* comes in. GitHub is a web platform that hosts/stores Git-based projects. There are other hosting services out there, but we'll just focus on GitHub.
+**GitHub**: Git is a program that lives on your computer. You could, if you wanted to, only ever use it locally to back-up your files. Most people though, use Git as a way to collaborate on projects, and share code and associated files. That needs some way of hosting Git-based projects on the internet, which is where *GitHub* comes in. GitHub is a web platform that hosts/stores Git-based projects. There are other hosting services out there, but we'll just focus on GitHub.
 
 **Git client**: Git can either be run through the command line or using a helper application like a GUI that assists with the process. The helper application is called a client. Some users prefer the command line, and indeed there are some things that can only be done through the command line, but when getting started the use of a client can be a huge help. The good news is that RStudio comes with an inbuilt Git client, which is enough for most of our needs.
 
@@ -104,7 +104,7 @@ We'll mainly use Git through RStudio, which offers a simple Git client. But firs
 3. `git status`. A useful command to see what files are being tracked.
 4. Make a text file with "this is the first line." in it, save to the working directory as *demotext.txt*.
 5. `git status`
-6. `git add demotext.txt`. Adds *demotext.txt* to the stage.
+6. `git add demotext.txt`. Adds *demotext.txt* to the staging area.
 7. `git status`. Note status of *demotext.txt* has changed.
 8. `git commit -m "added first line"`. Commits with a message (-m). 
 9. `git status`
@@ -215,13 +215,13 @@ knitr::include_graphics("figures/lesson1/gittedproj.png")
 
 ### Do something 
 
-In this step you just "do something" you would usually do in R. For example
+In this step you just "do something" you would usually do in R. For example:
 
 1. Use your browser or file manager (e.g. Windows Explorer, Finder) to browse to the project folder you just created. In this folder, create two new folders, one called "data" and another called "output". 
 
 2. Go back to RStudio and verify that the new folder and file has been detected.
 
-3. Open a new script file (Cmd/Ctrl + Shift + N) and type the following code in it
+3. Open a new script file (Cmd/Ctrl + Shift + N) and type the following code in it:
 
 ```{r, eval = FALSE}
 library(ggplot2)
@@ -262,19 +262,19 @@ Pushing saves your changes on the remote repository. You'd always commit first, 
 
 1. Click the blue "Pull" tab. This checks that there is not a more recent copy of your files on GitHub. If you're working on your own this will obviously be the case, but if you are collaborating someone may have pushed their changes since you last pulled, and this can create conflicts. Pull-before-push is therefore a useful habit to get into. You should get a message saying "Already up-to-date". Close this window.
 
-2. Click the green "Push" tab. This will push your changes onto the GitHub. Once complete, you can close the window and the main pane you have been using. Go to your repo on GitHub, refresh the browser, and check that the changes have been uploaded. 
+2. Click the green "Push" tab. This will push your changes onto the GitHub repo. Once complete, you can close the window and the main pane you have been using. Go to your repo on GitHub, refresh the browser, and check that the changes have been uploaded. 
 
 ## Collaborating with others on GitHub
 
 This section assumes there is an existing GitHub repo that you would like to interact with, by using the code in the repo and/or by contributing code to the repo yourself. These steps will also work in *starting* a collaborative project -- you'll just start by forking an empty repo (belonging to the person you're collaborating with).  
 
-1. Fork the target repo to your own GitHub account. Do this browsing to the target repo on GitHub and clicking the "Fork" button. This creates your own copy of the repo.
+1. Fork the target repo to your own GitHub account. Do this by browsing to the target repo on GitHub and clicking the "Fork" button. This creates your own copy of the repo.
 2. You can now clone the repo to your local machine. From *your* GitHub account, get the repo's URL by clicking the "Clone or download" button as before.
 3. Start a new R project using version control as shown before (*File > New Project > Version Control > Git*). Enter the URL you copied in the previous step. You should see the contents of the target repo in your R project.
 4. You can now work on the project and commit and push any changes in exactly the same way described previously. If you're not interested in developments in the target repo, or in collaborating by contributing changes to the target repo, then you don't need the following steps. Often though, you will want to keep your forked repo up-to-date with the target repo (either to keep track of new developments or because you are working together in some way). In that case, read on.
-5. To keep a forked repo up-to-date with the target repo, you first need to configure a remote that points from your repo to the "upsteam" target repo. First check the current remote repository for your fork by opening the terminal, browsing to the project directory and typing `git remote -v`. You should see the URL of your repo.
+5. To keep a forked repo up-to-date with the target repo, you first need to configure a remote that points from your repo to the "upstream" target repo. First check the current remote repository for your fork by opening the terminal, browsing to the project directory and typing `git remote -v`. You should see the URL of your repo.
 6. Add the upstream target repo by typing `git remote add upstream https://github.com/ORIGINAL_OWNER/ORIGINAL_REPOSITORY.git`. Type `git remote -v` again to check that it has been added.
-7. You can now pull any updates in the target repo with `git pull upstream master`
+7. You can now pull any updates from the target repo into your local repo (fork) with `git pull upstream master`.
 
 If you are going to be contributing changes to the target repo, you should now create a new branch and do your work there, rather than working directly in the master branch. When you are ready to push your changes upstream to the target repo, you do this by opening a pull request:
 
@@ -305,9 +305,9 @@ The pull request is then sent to the owner of the target repo, who may accept th
 
 Markdown is a simple mark-up language for writing documents. Files written in Markdown can be converted to HTML (or many other document formats) and end in .md. The "knit HTML" button in RStudio can be used to compile a Markdown document to HTML and open a preview.
 
-R Markdown is very similar: it is Markdown with runnable chunks of R code added in. Files written in R Markdown end in .Rmd or .rmd. They can also be converted to HTML and other formats, by first converting to Markdown and from there using to the desired format. 
+R Markdown is very similar: it is Markdown with runnable chunks of R code added in. Files written in R Markdown end in .Rmd or .rmd. They can also be converted to HTML and other formats, by first converting to Markdown and  then rendering into the desired format using `knitr`/`pandoc`.
 
-A big bonus of using Markdown documents (and by extension R Markdown documents) is that they can be directly viewed on GitHub in an attractive HTML-like format This gives you a free website of sorts on GitHub for your work. You don't get the same functionality from HTML files: on GitHub these will be viewed as plain text. 
+A big bonus of using Markdown documents (and by extension R Markdown documents) is that they can be directly viewed on GitHub in an attractive HTML-like format This gives you a free website of sorts on GitHub for your work. You don't get the same functionality from HTML files: on GitHub these will be viewed as plain text.
 
 To get your R Markdown documents readable by GitHub you need to do two things:
 
