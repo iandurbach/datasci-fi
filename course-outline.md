@@ -71,7 +71,7 @@ For the most part I'll be basing each lecture around an jupyter notebook that co
 
 After the lecture you should go through the notebook at your own pace and absorb all the details, making sure you understand what each bit of code does. Making sure you can reproduce the results on your own i.e. without the notebook, is a good test of understanding. Each notebook will have a few exercises at the end for you to try. To use the notebooks directly you need to install the R kernel for jupyter notebook, see [here](https://github.com/IRkernel/IRkernel/blob/master/README.md). I will also make equivalent .Rmd files available (these just aren't as nice and interactive for class).
 
-The notebooks will generally cover the topics at an introductory-to-intermediate level. I really hope that you will find them interesting enough to want to learn more (maybe not about *every* topic, but more often than not). There is a huge amount of material on the web about all the topics we'll cover. I'll maintain a list of additional readings (the table above already contains so me), but you'll benefit a lot from reading widely. If you find something interesting, let everyone know -- perhaps we can discuss it further in class.
+The notebooks will generally cover the topics at an introductory-to-intermediate level. I really hope that you will find them interesting enough to want to learn more (maybe not about *every* topic, but more often than not). There is a huge amount of material on the web about all the topics we'll cover. I'll maintain a list of additional readings (the table above already contains some), but you'll benefit a lot from reading widely. If you find something interesting, let everyone know -- perhaps we can discuss it further in class.
 
 I expect that to get the maximum benefit from the class you would probably need to do about 8 hours of self-study outside of lecture times (not counting assignments). Having said that, this is the first time the module is being run, so I really have no idea. Feedback is welcome (if you feel you're spending way too much time on the course, or feel you're learning way too little/much).
 
@@ -83,6 +83,6 @@ In the interests of getting fast feedback to everyone, we'll also be using [Slac
 
 ### Sources and references
 
-I have borrowed extensively from other peoples' material to create this course, and its not my intention to pass off work as my own when its not. My two main sources are the [R for Data Science](http://r4ds.had.co.nz/) and [Text Mining with R](http://tidytextmining.com/) listed above, and each notebook has further references to source material, but if you find I've missed an attribution please let me know. As this material will be put on the web, the same goes for any material that is incorrectly shared.
+I have borrowed extensively from other peoples' material to create this course, and its not my intention to pass off work as my own when its not. My two main sources are [R for Data Science](http://r4ds.had.co.nz/) and [Text Mining with R](http://tidytextmining.com/) listed above, and each notebook has further references to source material, but if you find I've missed an attribution please let me know. As this material will be put on the web, the same goes for any material that is incorrectly shared.
 
 
