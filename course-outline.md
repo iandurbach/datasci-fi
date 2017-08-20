@@ -18,26 +18,23 @@ The following is an intended lecture schedule but is subject to change! The whol
 |        | Recommender systems | User/item-based recommenders |  |
 |        |                     | Matrix factorization |  |
 |3        | Data collection |  Scraping data from the web    | rvest  |
-|        |    | Accessing APIs  | httr, twitteR, streamR  |
-|4      |  | Working with text     | stringr | R4DS-ch14 
-|        | Text mining | Analyzing text | tidytext | TMR-ch3
-|5        | | n-gram models | tidytext | TMR-ch3
+|      | Text mining  | Working with text     | stringr | R4DS-ch14 
+|4        |  | Analyzing text | tidytext | TMR-ch1, TMR-ch7
 |        | | Text generation |  | 
-|    | | Working with dates                 | lubridate | R4DS-ch16
-|6    |  | Sentiment analysis                 | tidytext | TMR-ch2
-|       |               | Bag-of-words models, tf-idf     | tidytext | TMR-ch4
-|7       | Neural networks | Stochastic gradient descent    |     |
-|        |                 | Backpropagation                |     |
-|        |                 | Introducing *keras*            | keras    |
+|5    |  | Sentiment analysis                 | tidytext | TMR-ch2
+|6     | | Bag-of-words models, tf-idf     | tidytext |TMR-ch4
+|    | Data collection | Accessing APIs  | httr, twitteR, streamR  |
+|7     | Text mining | Topic modelling | tidytext | TMR-ch6
 |8       | Visualization |  | ggplot2 | R4DS-ch3
-|9       | Deep learning | Convolutional neural networks | keras    |
+|9       | Neural networks | Stochastic gradient descent    |     |
+|        |                 | Backpropagation                |     |
+|        |                 | Introducing *keras*            | keras   |
+|10       |  | Convolutional neural networks | keras    |
 |        |               | Computer vision / image classification |   |
 |        |               | Setting up Amazon Web Services for GPU computing |   
-|10       | Communication | Make your own R package | Roxygen2    |
-|        |                | Make your own Shiny app             | shiny    |
-|       |       |   More with markdown (bookdown, notebooks) | |
-|11      | Deep learning | More convolutional neural networks   | keras    |
-|12      |               | Recap / Challenge feedback / Catch-up   |       |
+|11       | Communication | Make your own R package | Roxygen2    |
+|        |                | Make your own Shiny app             | shiny
+|12      |  | More convolutional neural networks   | keras
 
 R4DS = R for Data Science (2017) Hadley Wickham and Garrett Grolemund (available at http://r4ds.had.co.nz/)
 
@@ -61,8 +58,8 @@ There are two assignments and a small number (2-3) of smaller "exercises" to com
 
 |Assessment |  General area   |Handed out | Due date | Counts
 |--------|-----|-----|-----|-----
-|Assignment 1  | Recommender systems  |  14 Aug | 30 Sep | 20%
-|Assignment 2  | Image classification  |  21 Aug | 18 Sep  | 20%
+|Assignment 1  | Recommender systems  |  18 Aug | 5 Sep | 20%
+|Assignment 2  | Text mining  |  28 Aug | 18 Sep  | 20%
 |Small exercises | Various | TBA | TBA | 10%
 |Final | Everything | | 26-30 Sep (TBA) | 50%
 
