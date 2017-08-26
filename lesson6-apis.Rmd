@@ -1,0 +1,367 @@
+---
+title: "Lesson 6 // APIs"
+author: ""
+date: ""
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In the last few notebooks we've been analyzing twitter data that was collected and collated for us. In this notebook we'll see how to gather Twitter data ourselves, using Twitter's APIs. In doing so we'll also learn the basics of gathering data more generally using APIs.
+
+An API is an *Application Program Interface*, a way of accessing the functionality of a program from inside another program. APIs are software that act as intermediaries between two applications (in our context, a requester (you) and a website server). The API provides data in a standardized, efficient way, but first you need to know how to request things - APIs will differ in how this is done. You usually also need to get authorization to use the API beforehand.
+
+R has some packages for interacting with some of the most commonly used APIs like twitter, facebook, etc. The **httr** package is a more general way of making *http* requests to an API and can be used in cases where there's no specialist package (if there is, it'll often be easier to use that than **httr**).
+
+In the notebook we will:
+
+1. Gather tweets and related data by searching against a sampling of recent tweets published in the past 7 days, using the **twitteR** package. The **twitteR** package provides an easy-to-use interface to the Twitter Search API.
+2. Gather tweets directly from the twitter stream (rather than a sample), using the **streamR** package. The **streamR** package provides an interface to the Twitter Streaming API.
+3. Show how you can do the same thing using the more general **httr** package, which is useful for cases where there is not a special purpose package for interacting with a particular API.
+
+
+First load the required packages.
+
+
+```{r}
+library(streamR)
+library(twitteR)
+library(tidyverse)
+library(ggmap)
+library(jsonlite)
+library(httr)
+library(stringr)
+```
+
+## Accessing the Twitter Search API using twitteR
+
+Twitter Search API is part of Twitter’s REST API. It allows queries against the indices of recent or popular Tweets and behaves similarly to, but not exactly like the Search feature available in Twitter mobile or web clients, such as Twitter.com search. 
+
+The Twitter Search API searches a sample of recent Tweets made in the last 7 days. When interpreting results its important to know that data collected in this way will not consist of *all* tweets (e.g. on a topic, by a user), just a sample of these. In other respects the Search API is similarly to using the search feature available on Twitter (e.g. see [Twitter.com](https://twitter.com/)).
+
+Later on we will interface with Twitter Search API using **httr**. In this example, we're going to see how to interface with the API using the **twitteR** package. The results will be the same, and you could use either. The benefit of using **twitteR** is that it has been specifically designed of use with the Twitter Search API, and only that API, so it is a bit easier to use and you won't have to go wading through the API documentation. The **httr** package is more general, so it doesn't have e.g. functions that deal specifically with Twitter.
+
+### Setting up a Twitter app
+
+Many APIs require you to authenticate with OAuth tokens. OAuth is an open standard for token-based authentication on the Internet. Essentially, the Twitter API allows you to access various parts of Twitter's data resources. To use the API, Twitter needs to know who you are, and OAuth is the standard way of doing this. 
+
+For the Twitter API, authentication is done through creating your own Twitter Application, which is linked to your Twitter account. Twitter grants the authentication token to your app, but since this is linked to your account it gives Twitter a way of tracing the requests back to you. The fact that we are setting up an "app" is not important - from our point-of-view this app will not do anything, it is just a way to tell Twitter who we are when we make requests for data.
+
+So, we're now going to set up our own Twitter app and get the authentication details. 
+
+The following instructions are adapted from [here](http://thinktostart.com/twitter-authentification-with-r/).
+
+1. Go to https://apps.twitter.com/ and log in with your Twitter Account (you need a Twitter account to do this). Click the "Create new app" button.
+
+2. Enter the details of your app on the screen that follows:
+    + *Name*: this needs to be unique, so something like "test" won't be allowed, but other than that it doesn't matter what you call the app since you're the only person using it. 
+    + *Description*: enter anything you want
+    + *Website*: Enter any valid URL as the website (I use `http://www.stats.uct.ac.za/`). 
+    + *Callback URL*: this is the only important bit! Enter `http://127.0.0.1:1410`. 
+    + Tick the box that says you agree with the conditions of use.
+    + Click the button that says "Create your twitter application".
+
+3. You now need to get and write down your authentication details. 
+    + Select the "Keys and Access Tokens" tab, 
+    + Copy and paste the Consumer key (API key) and Consumer secret (API secret)
+    + Click on "Create my access token" near the bottom of the page. Copy and paste the "Access Token" and "Access Token Secret". 
+
+### Completing the OAuth authentication process in RStudio
+
+1. Open up R/RStudio and load the **twitteR** package
+
+2. Create variables for each of the authentication details you copied down previously. I save these to an .RData file for later use in the last line below but this is not really necessary (it just means I don't have to show you my authentication details in this notebook!). Remember not to share these details - they're passwords.
+```
+api_key <- "xxxxxxxxxxxxxx"
+api_secret <- "xxxxxxxxxxxxxx"
+access_token <- "xxxxxxxxxxxxxx-xxxxxxxxxxxxxx"
+access_token_secret <- "xxxxxxxxxxxxxx"
+save(api_key, api_secret, access_token, access_token_secret, file="my_twitteR_oauth.RData")
+```
+3. We now get OAuth authentication by passing the `setup_twitter_oauth()` function our `api_key` and `api_secret` from before (or by loading it again if saved as .RData i.e. `load(my_twitteR_oauth.RData)`).
+```
+setup_twitter_oauth(api_key,api_secret)
+```
+This will open up a web page that says "Authorize <YourTwitterAppName> to use your account?". Click "Authorize App" and return to R/RStudio. You should see a message "Authentication Complete". You're now done!
+
+### Using twitteR to collect data
+
+We need to start each session by providing our authentication details (you only need to create the OAuth token once, which we've done above, but you need to authenticate *every* twitteR session). 
+
+
+```{r}
+# load authentication details into R (or just load api_key and api_secret as done above)
+load("my_twitteR_oauth.RData") 
+
+# get OAuth authentication 
+setup_twitter_oauth(api_key,api_secret)
+```
+
+Let's collect 100 tweets using the #GuptaLeaks hashtag:
+
+
+```{r}
+# get some tweets
+tweets <- searchTwitter('#GuptaLeaks', n=100)
+str(tweets[[1]])
+```
+
+
+```{r}
+# view the data collected
+head(tweets)
+```
+
+We can clean up the tweets by removing links and filtering out retweets, for example, using regular expressions.
+
+
+```{r}
+# converts a list of objects from a single twitteR class and returns a data.frame
+tweets_df <- twListToDF(tweets)
+
+# clean up tweets
+replace_reg <- "(https?:.*?([\\s]|[a-zA-Z0-9]$))|(www:.*?([\\s]|[a-zA-Z0-9]$))|&amp;|&lt;|&gt;|RT"
+tweets_df <- tweets_df %>% as.tibble() %>%
+  filter(!str_detect(text, "^RT")) %>%
+  mutate(value = str_replace_all(text, replace_reg, ""))
+
+tweets_df %>% select(value)
+```
+
+The data we collected doesn't just cover the text of the tweet. Twitter sends a whole lot of other information, including each user's location (a string the user enters when signing up for a twitter account). Here we extract the location strings and use the Google Maps API to try and find the approximate latitude and longitude of each user's location. 
+
+
+```{r}
+# lookup user info
+user_info <- lookupUsers(tweets_df$screenName)  
+user_df <- twListToDF(user_info)  
+
+# use google maps API to get lat/lon from given user location (one of the exercises!)
+located_users <- !is.na(user_df$location)
+locations <- geocode(user_df$location[located_users])  
+```
+
+We then plot this using **ggmap**, an extension to **ggplot2** to interface with Google Maps.
+
+
+```{r}
+# plot tweets
+qmplot(lon, lat, data = locations, geom="blank") +
+  geom_point(data = locations, aes(x = lon, y = lat),
+             colour = I("red"), shape = 1)
+```
+
+Below is a few more ways to use the `searchTwitter()` function, applying various filters to the search:
+
+
+```{r}
+# filter by date
+tweets <- searchTwitter('#GuptaLeaks', n=100, since='2017-08-23', until='2017-08-25')
+```
+
+
+```{r}
+# filter by resultType (mixed [default], recent, popular)
+tweets_rec <- searchTwitter('#GuptaLeaks', n=100, resultType = "recent")
+tweets_pop <- searchTwitter('#GuptaLeaks', n=100, resultType = "popular")
+```
+
+
+```{r}
+# filter by location
+
+# constantia
+tweets_con <- searchTwitter('#GuptaLeaks', n=100, geocode='-34.02273,18.44813,10mi')
+# saxonwold
+tweets_sax <- searchTwitter('#GuptaLeaks', n=100, geocode='-26.16058,28.04098,10mi')
+```
+
+## Accessing the Twitter Streaming API using streamR
+
+The tweets that twitteR provides is based on a static snapshot of tweets that twitter provides, going back one week. An alternative way to use the twitter API is to use the **streamR** package to collect tweets through time.
+
+You first need to create *another* twitter app and get authentication details. You do this in exactly the same way as before except that **you must leave the callback URL blank** (don't ask me why). Do that once, and save your Consumer key (API key), Consumer secret (API secret), Access token, and Access token secret. 
+
+### Completing the OAuth authentication process in RStudio
+
+1. Open up R/RStudio and load the **twitteR** package
+
+2. Create variables for each of the authentication details you copied down previously
+```
+library(ROAuth)
+api_key <- "xxxxxxxx"
+api_secret <- "xxxxxxxx"
+access_token <- "xxxxxxxxxxxxxx-xxxxxxxxxxxxxx"
+access_token_secret <- "xxxxxxxxxxxxxx"
+```
+3. We now get OAuth authentication with the `OAuthFactory()` function. This is a bit more complicated that before but essentially we are still just passing `api_key` and `api_secret` to the function. 
+```
+my_oauth <- OAuthFactory$new(consumerKey = api_key, consumerSecret = api_secret, 
+                             requestURL = "https://api.twitter.com/oauth/request_token", 
+                             accessURL = "https://api.twitter.com/oauth/access_token", 
+                             authURL = "https://api.twitter.com/oauth/authorize" )
+my_oauth$handshake(cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
+save(my_oauth, file = "my_oauth.Rdata")
+```
+
+### Using streamR to collect data
+
+As before we need to start each session by providing our authentication details (you would only do the previous parts *once*, but you need to do the bit below *every* session).
+
+
+```{r}
+# load your OAuth token
+load("my_streamR_oauth.Rdata")
+```
+
+We capture tweets using the `filterStream()` function. There are various ways to use `filterStream()`. We can keep the stream open until we have collected a specified number of tweets, or for some time interval. It is also possible to follow certain people, or hashtags (see the help for details). Here we just show two uses.
+
+
+```{r}
+# capture 10 tweets mentioning the "HurricaneHarvey" hashtag
+filterStream(file.name="harvey_tweets.json",
+              track="#HurricaneHarvey", tweets=10, oauth=my_oauth)
+```
+
+```{r}
+# capture tweets mentioning the "HurricaneHarvey" hashtag for 30s
+filterStream(file="harvey_tweets.json",
+              track="#HurricaneHarvey", timeout=30, oauth=my_oauth)
+```
+
+Parse the tweets to get them into a readable form (if you get an error, you may have no tweets!)
+
+
+```{r}
+parsed_harvey <- parseTweets(tweets='harvey_tweets.json', simplify=F)
+head(parsed_harvey)
+```
+
+## Accessing the Twitter Search API with httr
+
+Where a special-purpose package like **twitteR** and **streamR** allows to to access an API, its almost definitely best to use it. But a limited number of these exist and so at some stage you might end up wanting to interact with an API for which an R package does not exist. 
+
+In that case, you can use the more general **httr** package. Loosely speaking, **httr** is R's version of *HTTP* - the standard protocol used to send and receive files and other data over the web. HTTP (Hypertext Transfer Protocol) uses the client-server model: the HTTP client opens a connection and sends a message to an HTTP server requesting a resource. The HTTP server then sends a return message, usually with the requested resource.
+
+The main **httr** (and, by extension, http) verbs are GET(), HEAD(), POST(), PATCH(), PUT() and DELETE(). We'll only deal with GET(), which is used to make a request.
+
+In this example we send a request to the Twitter Search API using the **httr** package. If you have not already done so (see Example 2), register an application at https://apps.twitter.com/ and replace key and secret below.
+
+
+```{r}
+load("my_twitteR_oauth.RData")
+```
+
+We now need to get an OAuth token "the **httr** way":
+
+```{r}
+myapp <- oauth_app("twitter", key = api_key, secret = api_secret)
+twitter_token <- oauth1.0_token(oauth_endpoints("twitter"), myapp)
+```
+
+Let's make a request for the Twitter Search API to return tweets associated with the hashtag "Hurricane Harvey".
+
+
+```{r}
+harvey_tweets <- GET("https://api.twitter.com/1.1/search/tweets.json?q=%23HurricaneHarvey",
+           config(token = twitter_token))
+```
+
+Of course to use the API effectively we need to know how to make requests. To find this out, you need to read the API documentation. For Twitter APIs the documentation is extensive; other APIs may well be much less so. Typically you would need to spend quite a bit of time familiarising yourself with an API you wanted to use.
+
+The documentation for the Twitter Search API can be found [here](https://dev.twitter.com/rest/public/search). 
+
+You'll see our search term "#HurricaneHarvey" has been encoded as "%23HurricaneHarvey" in the URL provided to `GET()`. To find the URL encoding you need you can either search for the term on Twitter and note the URL that comes up, or use an online URL encoder such as [this one](https://www.seocentro.com/tools/online/url-encoder.html).
+
+Finally, the default is to return 15 results at a time, but that can be increased to a maximum of 100 with the addition of `&count=100` to the end of the query URL.
+
+Let's get 50 tweets and examine what's in the response object.
+
+
+```{r}
+harvey_tweets <- GET("https://api.twitter.com/1.1/search/tweets.json?q=%23HurricaneHarvey&count=50",
+           config(token = twitter_token))
+```
+
+
+```{r}
+# outcommented for Rmd, too much output
+#str(content(harvey_tweets)) # also try str(harvey_tweets)
+```
+
+The response sent back by the Twitter server consists of three parts: 
+
+1. the status line, 
+2. the headers,
+3. the body. 
+
+The status line tells you the status of your request: 200 means everything is working fine, 404 means the resource you requested was not found. If you are accessing an API from within a function, you should strongly consider throwing a warning or raise an error if a request did not succeed, using `warn_for_status()` or `stop_for_status()`. 
+
+
+```{r}
+status_code(harvey_tweets)
+http_status(harvey_tweets)
+```
+
+Headers are used to pass additional information about the request. These are often things like operating parameters, like when the request was sent, the format of the response, etc. We won't be needing headers much (at all really), but just for completeness they're shown below.
+
+
+```{r}
+headers(harvey_tweets)
+```
+
+The body, as the name suggests, contains the meat of the request and this will be what we focus on. Depending on the format of the response, the body can be parsed in a number of ways using the `content()` function (output suppressed below in .Rmd file). 
+
+
+```{r, eval = FALSE}
+# parse as a character vector (doesn't parse nicely)
+content(harvey_tweets, "text")
+```
+
+
+```{r, eval = FALSE}
+# parse as a raw vector (even worse):
+content(harvey_tweets, "raw")
+```
+
+
+```{r, eval = FALSE}
+# parse using default parsers provided by httr for common file types
+content(harvey_tweets, "parsed")
+```
+
+We can also check the file type, verify that its JSON, and then use our own JSON parser.
+
+
+```{r}
+# check file type 
+http_type(harvey_tweets)
+```
+
+
+```{r}
+# format is json so can parse ourselves using jsonlite package
+parsed_harvey <- fromJSON(content(harvey_tweets, "text"), simplifyVector = TRUE)
+```
+
+Once the tweets have been parsed, we can easily extract the information that we want. For example, below we extract the text content of the tweets, and the date they were created.
+
+
+```{r}
+parsed_harvey$statuses$text
+```
+
+
+```{r}
+parsed_harvey$statuses$created_at
+```
+
+## Exercises
+
+1. The **Quandl** package provides a way of accessing the [Quandl](https://www.quandl.com/) API, which houses various kinds of financial and economic data. Many datasets are free, but if you would like to make more than 50 calls to the API a day, you need to create a free Quandl account and get an API key. You can have a look at the available datasets at https://docs.quandl.com/docs/data-organization. Data is brought into with R with the `Quandl()` `Quandl.datatable command()`, for time-series and data table objects respectively. See what data is available and in what format at the link above. Now, (a) create a Quandl account and get an API key, (b) find the `WIKI/PRICES` dataset and use the Quandl API to extract end of day stock prices for Apple and Microsoft for the period 1/1/2016 to 31/12/2016. Plot these two time series.
+
+2. Use the **httr** package to send a request to the Geolocation service of Google Maps JavaScript API that will give you the latitude-longitude co-ordinates of your home address.  The Geolocation service takes a street address (a string) and returns some data on that address (e.g. latitude and longitude). To find out what the form of the request should look consult the documentation [here](https://developers.google.com/maps/documentation/geocoding/start)).
+
+3. Use the **httr** package and consult the [documentation](https://dev.twitter.com/rest/public/search) on how to extract the followers of a user from the Twitter Search API. Extract the followers for a user of your choice and plot a histogram of the locations of these followers. 
