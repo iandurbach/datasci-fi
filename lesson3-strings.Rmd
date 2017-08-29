@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Working with text can be difficult. Often data collected as text is unstructured, of variable length, and prone to differences in how it is collected. You can therefore expect to do rather more cleaning of text data before it is in a shape that is useful for analysis. 
 
-This notebook is a minimal introduction to working with text using the **stringr** package, which has a lot of useful helpful functions for working with text. We also look at "regular expressions", a language for matching patterns in text that forms the basis for many of the functions in **stringr**.
+This notebook is a minimal introduction to working with text using the **stringr** package, which has a lot of useful functions for working with text. We also look at "regular expressions", a language for matching patterns in text that forms the basis for many of the functions in **stringr**.
 
 In this lesson we'll:
 
@@ -25,7 +25,6 @@ In this lesson we'll:
     + split up strings by some criterion
 
 For further reading, I strongly recommend [this chapter](http://r4ds.had.co.nz/strings.html) in R4DS, which covers the **stringr** package in quite a bit more detail than I do here. If you are new to regular expressions, there are a number of excellent tutorials online. Start with [this one](https://regexone.com/), and further information is [here](http://www.python-course.eu/re.php) and [here](http://www.regular-expressions.info/tutorial.html). There are many good "cheatsheets" to help you as you go, for example [Pete Freitag's](http://www.petefreitag.com/cheatsheets/regex/). The bible of regular expressions is apparently [this book](https://www.amazon.com/dp/0596528124/), if you really want to get into it!
-
 
 First we load the packages we'll need for the notebook.
 
@@ -49,7 +48,7 @@ nchar(string) # "length" of the string, base R
 str_length(string) # "length" of the string, stringr
 ```
 
-Strings are created using single or double quotes. If we want to include a literal quotes within the string, we need to use `\"`. This is a common way of including symbols that have a special meaning in the context of strings (we'll see much more of this with regular expressions). Try pasting the following lines into R/RStudio - you'll see that `string` on its own prints out the string itself, not the printed representation of it (for which we need `writeLines`. 
+Strings are created using single or double quotes. If we want to include literal quotes within the string, we need to use `\"`. This is a common way of including symbols that have a special meaning in the context of strings (we'll see much more of this with regular expressions). Try pasting the following lines into R/RStudio - you'll see that `string` on its own prints out the string itself, not the printed representation of it (for which we need `writeLines`). 
 
 
 ```{r}
@@ -59,7 +58,7 @@ string
 writeLines(string)
 ```
 
-If we escape certain characters that have a special meaning by putting a `\` in front, how to we get a backslash character into a string? We have to escape the escape character!
+If we escape certain characters that have a special meaning by putting a `\` in front, how do we get a backslash character into a string? We have to escape the escape character!
 
 
 ```{r}
@@ -67,7 +66,7 @@ writeLines("This is a \ string")
 writeLines("This is a \\ string")
 ```
 
-There are a few othe "special (meta)characters" you need to remember:
+There are a few other "special (meta)characters" you need to remember:
 
 * `\t` for "tab"
 * `\r` for "carriage return"
@@ -105,7 +104,7 @@ str_sub(web, -6, -1)
 str_sub(web, 2, -2)
 ```
 
-There are a few other useful basic things we can do with **stringr**. For example, we can change case. You need to be a bit careful here, because this conversion depends on your language settings (your [locale](http://r4ds.had.co.nz/strings.html#locales)). You can set this within the functions below. 
+There are a few other useful things we can do with **stringr**. For example, we can change case. You need to be a bit careful here, because this conversion depends on your language settings (your [locale](http://r4ds.had.co.nz/strings.html#locales)). You can set this within the functions below. 
 
 
 ```{r}
@@ -156,7 +155,7 @@ str_view(x, regex("a"))
 
 ### Special metacharacters: `\d`, `\w`, `\s`
 
-There are a number of "special (meta)characters" that can be used in regular expressions to match a certain type of character. Commons ones include:
+There are a number of "special (meta)characters" that can be used in regular expressions to match a certain type of character. Common ones include:
 
 * `\d`: any digit
 * `\w`: any alphanumeric character
@@ -168,7 +167,7 @@ These can all be negated by capitalizing them:
 * `\W`: any NON-alphanumeric character
 * `\S`: any NON-whitespace
 
-Note that below we need to add a second backslash. The reason you need two is because both the string parser used by **stringr** and the regular expression itself support escapes. Therefore, `\\d` (for example) is parsed to `\d` by the string parser and then interpreted by the regular expression parser. This is just a feature of **stringr**: you need a add a second backslash to anything that you would ordinarily use one for in a regular expression. 
+Note that below we need to add a second backslash. The reason you need two is because both the string parser used by **stringr** and the regular expression itself support escapes. Therefore, `\\d` (for example) is parsed to `\d` by the string parser and then interpreted by the regular expression parser. This is just a feature of **stringr**: you need to add a second backslash to anything that you would ordinarily use one for in a regular expression. 
 
 
 ```{r}
@@ -193,7 +192,7 @@ If we want to match a particular string, say "ap", we use that as the regular ex
 str_view(x, "ap")
 ```
 
-If we want to match any a *or* p, we use `[ap]`. The square brackets indicate an *or* kind of match. Note that below reads "match a single letter that is either *a* or *p*.
+If we want to match any a *or* p, we use `[ap]`. The square brackets indicate an *or* kind of match. Note that the below reads "match a single letter that is either *a* or *p*.
 
 
 ```{r}
@@ -233,7 +232,7 @@ str_view(x, "[A-Za-z0-9]")
 
 ### Matching repetitions
 
-We've looked in fair detail at various ways of matching one or two characters. We can extend these methods to longer patterns, but this will quickly become unwieldy if we need to write out all the possibile options that each character can take on. Some important tools allow us to specify pattern **repetitions**, allowing us to express lengthier pattern concisely. 
+We've looked in fair detail at various ways of matching one or two characters. We can extend these methods to longer patterns, but this will quickly become unwieldy if we need to write out all the possible options that each character can take on. Some important tools allow us to specify pattern **repetitions**, allowing us to express lengthy patterns concisely. 
 
 Suppose we wanted to match a sequence of 3 alphanumeric characters. We could say (the long way),
 
@@ -255,7 +254,7 @@ This gives us considerable flexibility. For example:
 ```{r}
 str_view(x, "\\w{2,3}") # any alphanum between 2 and 3 times
 str_view(x, "\\w{2,}") # any alphanum at least 2 
-str_view(x, "[an]{2}") # two characters, each of which can be a a or n
+str_view(x, "[an]{2}") # two characters, each of which can be an a or n
 ```
 
 Three other tools assist with controlling how many times a pattern matches. These are:
@@ -290,7 +289,7 @@ str_view("apple", "an?p")
 
 ### Specifying the start and end of a string
 
-The start of a string can be matched with `^`, the end with `$`
+The start of a string can be matched with `^`, the end with `$`:
 
 
 ```{r}
@@ -339,7 +338,7 @@ Rather than the above, **stringr** provides a useful wrapper function `str_subse
 ```{r}
 # gives same result as `x[str_detect(x, "\\d")]`
 str_subset(x, "\\d")
-# extracts indices of elements matching pattern
+# extracts indices of elements matching a pattern
 str_which(x, "\\d")
 ```
 
