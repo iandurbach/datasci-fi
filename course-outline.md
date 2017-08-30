@@ -32,7 +32,7 @@ The following is an intended lecture schedule but is subject to change! The whol
 |10       |  | Convolutional neural networks | keras    |
 |        |               | Computer vision / image classification |   |
 |        |               | Setting up Amazon Web Services for GPU computing |   
-|11       | Communication | Make your own R package | Roxygen2    |
+|11       | Communication | Make your own R package | devtools, roxygen2, knitr, testthat  |
 |        |                | Make your own Shiny app             | shiny
 |12      |  | More convolutional neural networks   | keras
 
