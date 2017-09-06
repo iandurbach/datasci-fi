@@ -21,6 +21,7 @@ Here is a quick overview of what we'll cover:
 * Documentation
 * Testing
 * Sharing & collaboration
+* Other Topics (not covered)
 * Review
 * Learn More
 
@@ -267,7 +268,7 @@ Note that it's also possible to document other objects e.g. datasets - in fact, 
 Another thing that's worth mentioning here is an alternative workflow for documentation (and package dev iteration in general). The first documentation workflow (`devtools::load_all()`) is very fast, but it does have a limitation - the preview documentation pages won't show links between pages. If you need to also see links, you can instead use Build and Reload (Ctrl/Cmd + Shift + B), which will update, install it as part of your package library, and then restart R and reload the package. This is slower but more thorough, so is worth doing on ocassion after making a number of small (or big) changes to a package and/or it's documentation. In order to make sure that all the documentation is regenerated as part of the package build process, you'll need to configure the Roxygen options within the Build Tools section of Project Options in RStudio as shown below:
 
 ```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("figures/lesson9/build_reload_options.png", )
+knitr::include_graphics("figures/lesson9/build_reload_options.png")
 ```
 
 ## Testing
@@ -356,6 +357,19 @@ Again, `devtools` contains a nifty function to get you started with a template v
 devtools::use_vignette("my-vignette")
 ```
 
+Another very useful tool is the [goodpractice](https://github.com/MangoTheCat/goodpractice) package. After installing it, simply run `goodpractice::gp("<my-package>")`. It will analyze your code and give you advice on package conventions, things to avoid and suggested best practice when developing an R package!
+
+## Other Topics (not covered)
+
+* Namespaces, scoping etc - `NAMESPACE`
+* Compiled code (e.g. `Rcpp`) - `src/`
+* Installed files - `inst/`
+* Data - `data/`
+* Versioning, dependencies etc - `DESCRIPTION`
+* CRAN - preparing your package for submission (e.g. `NEWS.md`)
+
+All of the above topics are covered very nicely in [R packages](http://r-pkgs.had.co.nz/).
+
 ## Review
 
 ### R code workflow
@@ -388,12 +402,16 @@ devtools::use_vignette("my-vignette")
 
 ## Learn More
 
-[R Packages (Hadley Wickham)](http://r-pkgs.had.co.nz/)
+The resources below are ordered (roughly) from shortest/simplest to longest/most detailed.
 
-[Write your own R package (Stat 545)](http://stat545.com/packages00_index.html)
+* [Writing an R package from Scratch (Hilary Parker)](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/)
 
-[R package primer - a minimal tutorial (Karl Broman)](http://kbroman.org/pkg_primer/)
+* [R package primer - a minimal tutorial (Karl Broman)](http://kbroman.org/pkg_primer/)
 
-[Writing R extensions (CRAN)](https://cran.r-project.org/doc/manuals/r-release/R-exts.html)
+* [Write your own R package (Stat 545)](http://stat545.com/packages00_index.html)
+
+* [R Packages (Hadley Wickham)](http://r-pkgs.had.co.nz/)
+
+* [Writing R extensions (CRAN)](https://cran.r-project.org/doc/manuals/r-release/R-exts.html)
 
 In addition to reading books, websites, blog posts etc, another great way to learn about R package development is to just explore the source code for various packages that you are already familiar with on GitHub and see what you can learn by just piecing together how the package authors/maintainers have done things. Good candidates are mature and actively maintained `tidyverse` packages like [dplyr](https://github.com/tidyverse/dplyr), [tidyr](https://github.com/tidyverse/tidyr) and [stringr](https://github.com/tidyverse/stringr).
