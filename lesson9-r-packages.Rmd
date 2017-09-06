@@ -1,0 +1,417 @@
+---
+title: "Lesson 9 // R Packages"
+author: ""
+date: ""
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+R packages bundle together code, data, documentation, and tests, and are easy to share with others. There are already well over 10,000 packages available on the Comprehensive R Archive Network (CRAN), and R users quickly become familiar with the process of installing and using R packages as part of their workflow.
+
+In this lesson we'll look at the process of creating an R package. It's a lot easier than you might think!
+
+Here is a quick overview of what we'll cover:
+
+* Why build R packages?
+* What do you need?
+* Basic setup process
+* Documentation
+* Testing
+* Sharing & collaboration
+* Other Topics (not covered)
+* Review
+* Learn More
+
+## Why build R packages?
+
+There are a number of reasons why you should want to know how to build an R package:
+
+* To share code with others (or even just with yourself)
+* To leverage existing tooling for consistency & efficiency
+* Learning about package development has spin-off benefits for everyone
+
+### Sharing code
+
+Bundling code into a package makes it easy for other people to use it, since it's likely that they already know how to install and learn to use an R package. Even if you just want to share code across multiple projects of your own, an R package is often the best way to do this.
+
+### Leveraging tooling
+
+The standardised conventions of R packages have lead to standardised tooling, particularly in the key areas of documentation and testing. So by buying into R's package conventions when bundling up code, you get the benefits of these tools.
+
+### Package learnings benefit everyone
+
+The learning process involved in creating your own R packages will improve your understanding of existing R packages and also of R itself, and will equip you to contribute back to the community with feature additions, improved documentation, bug fixes etc for these packages. In short, learning unlocks opportunities for further learning.
+
+## What do you need?
+
+The [RStudio IDE](https://www.rstudio.com/products/rstudio/#Desktop) is highly useful for package development due to its integration with `devtools` but is not required.
+
+You'll need the following R packages:
+
+* [devtools](https://github.com/hadley/devtools)
+* [roxygen2](https://github.com/klutometis/roxygen)
+* [knitr](https://github.com/yihui/knitr)
+* [testthat](https://github.com/hadley/testthat)
+
+In addition to `devtools` you'll likely need (at some point) to have a development environment setup. For pure R packages which don't require any compiled code this isn't necessary.
+
+You may already have what you need, or the `devtools` package installation process may automatically take care of this for you. You can check that you have what you need with:
+
+```{r}
+library(devtools)
+has_devel()
+```
+
+If the above returns `TRUE`, then you're good to go. If not, then you'll probably need to do a manual install/setup, and the process will depend on the platform you're on:
+
+- Windows: [Rtools](http://cran.r-project.org/bin/windows/Rtools/)
+- Mac: [xcode](http://developer.apple.com/downloads)
+- Linux: [r-base-dev](https://cran.r-project.org/bin/linux/debian/)
+
+For this lesson we'll only require `devtools` itself, so feel free to skip the above (Rtools/xcode/r-base-dev) for now if you want to.
+
+## Basic Setup Process
+
+Ok, so onto the basic steps involved in creating an R package.
+
+#### Create a skeleton project (package directory)
+
+Let's create a package project called `datasci`.
+
+In RStudio you can do this very easily with:
+
+> File -> New Project -> New Directory -> R package
+
+However, lets use `devtools` directly instead:
+
+```{r}
+devtools::create("datasci")
+```
+
+This will create the directory `datasci/` within your current working directory. It should contain an empty `R` folder as well as a few other files - `DESCRIPTION`, `NAMESPACE`, `.Rbuildignore`, `datasci.Rproj` etc.
+
+Open up the new project in RStudio, and build & reload the package:
+
+> Build -> Build & Reload (Ctrl/Cmd + Shift + B)
+
+This will build and install the package, restart your R session, and (re)load the package. The package is empty at this point, so this step is fairly meaningless, apart from just checking that things are setup and working correctly. 
+
+It is worth emphasizing this step upfront however, since it is of crucial importance later on once you get into the flow of making updates to your package and testing them.
+
+Note that you can also achieve the same thing with:
+
+> Build -> Load all (Ctrl/Cmd + Shift + L)
+
+or:
+
+```{r}
+devtools::load_all()
+```
+
+`Load all` and `Build & Reload` actually do slightly different things, but either is fine for now. `Load all` simulates the process of installing and loading a package (but doesn't actually install the package). This makes it less thorough but more efficient than `Build & Reload`. We'll revisit the differences between these again when we look at Documentation.
+
+### Add function(s)
+
+Let's add a function to the package. All R code for a package goes in the `R/` directory. Create a new file `add.R` within the `R` directory of your package project which contains the following:
+
+```{r}
+add <- function(x, y) {
+  x + y
+}
+```
+
+`Load all` changes to the package as before (Ctrl/Cmd + Shift + L).
+
+You should now be able to call the `add()` function from the R console e.g:
+
+```{r}
+add(1, 1)
+```
+
+So now we've got a basic package which contains a function for addition. But it's missing documentation:
+
+```{r}
+?add
+```
+
+## Documentation
+
+Documentation for R packages goes in the `man/` directory. R has a special file format for documentation which uses the file extension `.Rd`. It looks quite similar to LaTeX in some respects. Here is the content of `desc.Rd` in the `dplyr` package:
+
+```
+\name{desc}
+\alias{desc}
+\title{Descending order}
+\usage{
+desc(x)
+}
+\arguments{
+\item{x}{vector to transform}
+}
+\description{
+Transform a vector into a format that will be sorted in descending order.
+This is useful within \code{\link[=arrange]{arrange()}}.
+}
+\examples{
+desc(1:10)
+desc(factor(letters))
+
+first_day <- seq(as.Date("1910/1/1"), as.Date("1920/1/1"), "years")
+desc(first_day)
+
+starwars \%>\% arrange(desc(mass))
+}
+```
+
+If you compare this to the output of `?dplyr::desc` in R, you'll see that the `.Rd` file format is not too hard to make sense of. However, it is not ideal to have to keep the documentation for each function in a package up to date in a separate `.Rd` file that lives in another folder within the package.
+
+This was one of the primary motivations behind the development of `roxygen` - it allows documentation to live with the R code itself. This is achieved by including specialized comments above the function definition i.e. you get to 'attach' documentation to the R code for a function. These comments can then be knitted into .Rd files as part of the package build process.
+
+Let's take a look at the Roxygen comments for `desc()` in dplyr to see where `desc.Rd` originated:
+
+```
+#' Descending order
+#'
+#' Transform a vector into a format that will be sorted in descending order.
+#' This is useful within [arrange()].
+#'
+#' @param x vector to transform
+#' @export
+#' @examples
+#' desc(1:10)
+#' desc(factor(letters))
+#'
+#' first_day <- seq(as.Date("1910/1/1"), as.Date("1920/1/1"), "years")
+#' desc(first_day)
+#'
+#' starwars %>% arrange(desc(mass))
+desc <- function(x) -xtfrm(x)
+```
+
+Note that Roxygen comments begin with `#'` so you can continue to use regular comments for other purposes. Roxygen comments also incorporate different tags (e.g. `@examples`) for different sections. In some cases the tags themselves are optional even though the sections are required - for example the very first line corresponds to the `@title` for the help page and the following paragraph is used for the `@description`. Further `@details` are optional. One of the best places to get familiar with Roxygen comments and tags is the `roxygen2` package vignette on [Generating .Rd files](https://cran.r-project.org/web/packages/roxygen2/vignettes/rd.html).
+
+For now, let's start by initializing `roxygen2` for the `datasci` package:
+
+```{r}
+roxygen2::roxygenise()
+```
+
+This will update the `NAMESPACE` & `DESCRIPTION` and create the `man/` directory.
+
+The update to `DESCRIPTION` is just to include the `RoxygenNote` field which specifies which version of Roxygen the package is using.
+
+If you inspect the `NAMESPACE` file you'll see that the first line is:
+
+```
+# Generated by roxygen2: do not edit by hand
+```
+
+Essentially `roxygen2` performs two key tasks based on two sets of tags: 
+
+* some tags (e.g. `@param`, `@examples` etc) are used to generate `.Rd` files in `man/`
+* other tags (e.g. `@export`) are used to generate/manage the package `NAMESPACE`
+
+By only using certain tags, it is possible to leverage Roxygen only for documentation or only for namespace management, but I recommend you embrace Roxygen fully and use it for both. This means that the above directive (not editing the `NAMESPACE` by hand) should be adhered to. For more on namespaces, I suggest you read the [section on namespaces](http://r-pkgs.had.co.nz/namespace.html) in Hadley's book.
+
+Next let's add Roxygen comments to `add()`. Open up `add.R` in the RStudio script editor (if you don't have it open already) and place your cursor within the body of the function.
+
+You should now be able to insert a roxygen skeleton for the function as follows:
+
+> Code -> Insert Roxygen Skeleton (Ctrl + Alt + Shift + R)
+
+Then update the content as shown below:
+
+```{r}
+#' Add numbers together
+#'
+#' @param x First number
+#' @param y Second number
+#'
+#' @return Sum of the first and second number
+#' @export
+#'
+#' @examples
+#' add(1, 1)
+#' add(20, 22)
+add <- function(x, y) {
+  x + y
+}
+```
+
+Once you've done this, you should then run:
+
+```{r}
+devtools::document()
+```
+
+Alternatively you can also use Ctrl/Cmd + Shift + D. This is a helper function which calls `roxygenise()` behind the scenes. It will generate the file `add.Rd` in `man/`, and update `NAMESPACE` to export the `add()` function. 
+
+Note that if you don't include the `@export` tag in your function documentation, the function will remain unexported, which means that the function will not be directly accessible when the package is loaded/attached. It often makes sense for certain utility functions within packages to remain unexported since though they may be used/shared by various functions within a package, these functions themselves often are directly useable (or useful) outside of the package environment.
+
+You can now view the help for the `add()` function with:
+
+```{r}
+?add
+```
+
+```{r, eval = TRUE, echo = FALSE}
+knitr::include_graphics("figures/lesson9/datasci_documentation.png")
+```
+
+Obviously this is just a very simple example of function documentation to illustrate the process. I recommend you read the other [vignettes for roxygen2](https://cran.r-project.org/web/packages/roxygen2/vignettes/) in order to learn more.
+
+Note that it's also possible to document other objects e.g. datasets - in fact, every object exported by a package should be documented and the package itself should also be documented. Hadley's book has a [section on object documentation](http://r-pkgs.had.co.nz/man.html) which is a good reference for this.
+
+Another thing that's worth mentioning here is an alternative workflow for documentation (and package dev iteration in general). The first documentation workflow (`devtools::load_all()`) is very fast, but it does have a limitation - the preview documentation pages won't show links between pages. If you need to also see links, you can instead use Build and Reload (Ctrl/Cmd + Shift + B), which will update, install it as part of your package library, and then restart R and reload the package. This is slower but more thorough, so is worth doing on ocassion after making a number of small (or big) changes to a package and/or it's documentation. In order to make sure that all the documentation is regenerated as part of the package build process, you'll need to configure the Roxygen options within the Build Tools section of Project Options in RStudio as shown below:
+
+```{r, eval = TRUE, echo = FALSE}
+knitr::include_graphics("figures/lesson9/build_reload_options.png")
+```
+
+## Testing
+
+```{r}
+devtools::use_test("add")
+```
+
+Behind the scenes this will first call `devtools::use_testthat()`, which will create `tests/testthat.R`, `tests/testthat/` and add `testthat` to the suggested packages. Then it will create the file `tests/testhat/test-add.R` which contains an example test:
+
+```
+context("add")
+
+test_that("multiplication works", {
+  expect_equal(2 * 2, 4)
+})
+```
+
+Let's replace/update the content of `test-add.R` with a few tests for our `add()` function:
+
+```
+context("numeric addition is correct")
+
+test_that("1 + 1 equals 2", {
+  expect_equal(add(1, 1), 2)
+})
+
+test_that("1 + -1 equals 0", {
+  expect_equal(add(1, -1), 0)
+})
+
+context("non-numeric input results in an error")
+
+test_that("string input results in an error", {
+  expect_error(add("1", 1))
+})
+```
+
+You can now run these tests with:
+
+```{r}
+devtools::test()
+```
+
+You should then see output in the RStudio build pane as shown below:
+
+```{r, eval = TRUE, echo = FALSE}
+knitr::include_graphics("figures/lesson9/datasci_testing.png")
+```
+
+## Sharing & Collaboration
+
+Although it hasn't been stated until now, it should be a given that you use Git (or if necessary something else) for version control for the reasons outlined in lesson 1. This should take place long before you get to the stage where you might think about sharing your package with a wider audience.
+
+If you're going to share your package, then there are a few additional steps and things to consider. Much of this relates to package metadata, and one of the best places to get an overview of this is the [description chapter](http://r-pkgs.had.co.nz/description.html) in Hadley's book on R packages.
+
+For now we'll just outline a few of the more obvious step to work through.
+
+### Update package information in the `DESCRIPTION`
+
+Package title, description, author information etc.
+
+### Add a software license
+
+The two most commonly used software licenses for R packages are the MIT license and the GPL3 license. `devtools` includes functions for adding these to a package: `use_mit_license()` and `use_gpl3_license()`. Note that the MIT license requires you to include a `LICENSE` file - the `devtools` helper function will create this file and all you need to do is update the copyright holder field with your name. https://tldrlegal.com/ and https://choosealicense.com/licenses/ are two good places to get more information on different software licenses, and the R project website also has [a page](https://www.r-project.org/Licenses/) which lists the licenses in use for R packages.
+
+### Add a package README
+
+It's a really good idea to create a `README` for your package - especially for example if you will be sharing your package on GitHub. The package `README` should outline the basics of why someone might want to use your package, how they should use your package and how to install your package e.g. `devtools::install_github('username/packagename')`. 
+
+The `README` should be in markdown, but if you want to include code examples, it's usually easier to write it with Rmarkdown and then knit to GitHub flavoured markdown. `devtools` contains a helper function to assist with this:
+
+```{r}
+devtools::use_readme_rmd()
+```
+
+This will create a template `README.Rmd` which you can edit and then `knit` to generate `README.md`.
+
+### Add a package vignette
+
+Vignettes are more longform documentation which act as a guide for how to use your package. See the [section on vignettes in Hadley's book](http://r-pkgs.had.co.nz/vignettes.html) for an overview.
+
+Again, `devtools` contains a nifty function to get you started with a template vignette:
+
+```{r}
+devtools::use_vignette("my-vignette")
+```
+
+Another very useful tool is the [goodpractice](https://github.com/MangoTheCat/goodpractice) package. After installing it, simply run `goodpractice::gp("<my-package>")`. It will analyze your code and give you advice on package conventions, things to avoid and suggested best practice when developing an R package!
+
+## Other Topics (not covered)
+
+* Namespaces, scoping etc - `NAMESPACE`
+* Compiled code (e.g. `Rcpp`) - `src/`
+* Installed files - `inst/`
+* Data - `data/`
+* Versioning, dependencies etc - `DESCRIPTION`
+* CRAN - preparing your package for submission (e.g. `NEWS.md`)
+
+All of the above topics are covered very nicely in [R packages](http://r-pkgs.had.co.nz/).
+
+## Review
+
+### R code workflow
+
+* Edit an `.R` file.
+
+* `devtools::load_all()` (or Ctrl/Cmd + Shift + L in RStudio)
+
+* Explore the function(s) & code in the console.
+
+* Rinse and repeat.
+
+### Documentation workflow
+
+* Add roxygen comments to your `.R` files.
+
+* Run `devtools::document()` (or Ctrl/Cmd + Shift + D in RStudio) to convert roxygen comments to `.Rd` files.
+
+* Preview documentation with `?`.
+
+* Rinse and repeat until the documentation looks the way you want.
+
+### Testing workflow
+
+* Modify your code in `R/` or tests in `tests/testthat/`.
+
+* Test your package with `devtools::test()` (or Ctrl/Cmd + Shift + T in RStudio).
+
+* Repeat until all tests pass.
+
+## Learn More
+
+The resources below are ordered (roughly) from shortest/simplest to longest/most detailed.
+
+* [Writing an R package from Scratch (Hilary Parker)](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/)
+
+* [R package primer - a minimal tutorial (Karl Broman)](http://kbroman.org/pkg_primer/)
+
+* [Write your own R package (Stat 545)](http://stat545.com/packages00_index.html)
+
+* [R Packages (Hadley Wickham)](http://r-pkgs.had.co.nz/)
+
+* [Writing R extensions (CRAN)](https://cran.r-project.org/doc/manuals/r-release/R-exts.html)
+
+In addition to reading books, websites, blog posts etc, another great way to learn about R package development is to just explore the source code for various packages that you are already familiar with on GitHub and see what you can learn by just piecing together how the package authors/maintainers have done things. Good candidates are mature and actively maintained `tidyverse` packages like [dplyr](https://github.com/tidyverse/dplyr), [tidyr](https://github.com/tidyverse/tidyr) and [stringr](https://github.com/tidyverse/stringr).
