@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>R Packages and Shiny</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Jon Calder" />
+    <link href="libs/remark-css/example.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# R Packages and Shiny
+### Jon Calder
+### 2017/09
+
+---
+
+
+
+
+background-image: url(img/Derivco.jpg)
+background-size: 100%
+
+---
+
+background-image: url(img/Derivco_Jon.jpg)
+background-size: 100%
+
+---
+
+background-image: url(img/apex-building.jpg)
+
+# Derivco Cape Town
+
+---
+class: inverse, middle, center
+
+# R Packages - Overview
+
+---
+background-image: url(img/package-stickers.jpeg)
+background-size: 400px 
+background-position: 90% 15%
+
+--
+
+## Why Build Packages?
+--
+
+## What Do We Need?
+--
+
+## What Are The Basic Steps?
+--
+
+## Documentation
+--
+
+## Testing
+--
+
+## Sharing &amp; Collaboration
+--
+
+???
+
+(insert notes here)
+
+---
+class: inverse, center, middle
+
+# Why Build Packages?
+
+---
+
+# Why Build Packages?
+--
+
+## To share code
+--
+
+- With yourself e.g. re-using code across multiple projects
+- With others e.g. colleagues, the wider R commmunity
+
+--
+
+background-image: url(img/minions.webp)
+background-position: 90% 5%
+
+--
+
+## To leverage existing tooling
+
+--
+
+- Documentation
+- Testing
+
+--
+
+background-image: url(img/testing.jpg)
+background-position: 90% 5%
+background-size: 200px
+
+--
+
+## To learn more
+
+--
+
+- Improve your understanding of R
+- Contribute to other R packages
+
+--
+
+background-image: url(img/cat-can-fix.jpg)
+background-position: 90% 5%
+
+???
+
+(insert notes here)
+
+---
+
+# What Do We Need?
+
+--
+
+- [R](https://cran.r-project.org/)
+--
+
+background-image: url(img/Rlogo.png)
+background-size: 150px
+background-position: 90% 10%
+
+--
+
+- [RStudio](http://rstudio.com/) (not essential, but highly useful)
+
+--
+
+background-image: url(img/RStudio-Logo.png)
+background-size: 350px
+background-position: 90% 10%
+
+--
+
+- [devtools](https://github.com/hadley/devtools) plus:
+  - Windows: [Rtools](http://cran.r-project.org/bin/windows/Rtools/)
+  - Mac: [xcode](http://developer.apple.com/downloads)
+  - Linux: [r-base-dev](https://cran.r-project.org/bin/linux/debian/)
+
+--
+
+background-image: url(img/devtools.png)
+background-size: 180px
+background-position: 90% 10%
+
+--
+
+You can check that you have what you need with:
+
+```
+library(devtools)
+has_devel()
+```
+--
+
+Then for documentation and testing:
+--
+
+- [roxygen2](https://github.com/klutometis/roxygen)
+
+--
+
+background-image: url(img/roxygen2.png)
+background-size: 200px
+background-position: 90% 10%
+
+--
+
+- [knitr](https://github.com/yihui/knitr)
+
+--
+
+background-image: url(img/knitr.png)
+background-size: 180px
+background-position: 90% 10%
+
+--
+
+- [testthat](https://github.com/hadley/testthat)
+
+--
+
+background-image: url(img/testthat.png)
+background-size: 180px
+background-position: 90% 10%
+
+--
+
+???
+
+(insert notes here)
+
+---
+
+# What Are The Basic Steps?
+
+* Create package directory/skeleton project
+
+&gt; RStudio -&gt; File -&gt; New Project -&gt; New Directory -&gt; R package
+
+```r
+devtools::create("datasci")
+```
+
+* Edit an `.R` file to add a function or update an existing function.
+
+* Ctrl/Cmd + Shift + L in RStudio to load all package code
+```r
+devtools::load_all()
+``` 
+
+* Explore the function(s) &amp; code in the console.
+
+* Rinse and repeat.
+
+???
+
+(insert notes here)
+
+---
+
+# Documentation
+
+* Add roxygen comments to your `.R` files.
+
+* Ctrl/Cmd + Shift + D in RStudio to convert roxygen comments to `.Rd` files.
+```r
+devtools::document()
+```
+
+* Preview documentation with `?`.
+
+* Rinse and repeat until the documentation looks the way you want.
+
+
+???
+
+(insert notes here)
+
+---
+
+# Testing
+
+* Modify your code in `R/` or tests in `tests/testthat/`.
+
+* Ctrl/Cmd + Shift + T in RStudio to test your package.
+```r
+devtools::test()
+```
+
+* Repeat until all tests pass.
+
+???
+
+(insert notes here)
+
+---
+
+# Sharing &amp; Collaboration
+
+* Use Git &amp; GitHub unless you aren't able to for some reason
+
+* Add a package README - `devtools::use_readme_rmd()`
+
+* Add a package vignette - `devtools::use_vignette("datasci")`
+
+* Think about adding a LICENSE and contributing guidelines if you are sharing publicly
+
+* Run `goodpractice::gp("datasci")` to get advice on best practice
+
+
+???
+
+(insert notes here)
+
+
+---
+background-image: url(img/r-pkgs.png)
+background-position: 90% 10%
+background-size: 300px
+
+# Learn More
+
+## R Packages
+
+[R Packages (Hadley Wickham)](http://r-pkgs.had.co.nz/)
+
+[Write your own R package (Stat 545)](http://stat545.com/packages00_index.html)
+
+[Writing R extensions (CRAN)](https://cran.r-project.org/doc/manuals/r-release/R-exts.html)
+
+
+
+---
+class: inverse, middle, center
+
+# Shiny - Overview
+
+---
+class: center
+
+### Shiny Examples
+
+.pull-left[
+![](img/superzip-example.png)
+![](img/google-charts.png)
+]
+
+.pull-right[
+![](img/bus-dashboard.png)
+![](img/movie-explorer.png)
+]
+
+---
+
+# Inputs
+
+![](img/shiny_inputs.png)
+
+---
+
+# Inputs
+
+![](img/input_syntax.png)
+
+---
+
+# Outputs
+
+![](img/shiny_outputs.png)
+
+---
+
+# Outputs
+
+![](img/output_syntax.png)
+
+---
+
+# Outputs
+
+![](img/render_outputs.png)
+
+---
+
+# Outputs
+
+![](img/render_output_syntax.png)
+
+---
+
+# Outputs
+
+![](img/basic_reactivity.png)
+
+---
+background-image: url(img/shiny-dev-center.png)
+background-position: 90% 10%
+background-size: 500px
+
+# Learn More
+
+
+## Shiny
+
+[Shiny website](https://shiny.rstudio.com/)
+
+[flexdashboard](http://rmarkdown.rstudio.com/flexdashboard/) / [shinydashboard](https://rstudio.github.io/shinydashboard/)
+
+[Show Me Shiny](https://www.showmeshiny.com/)
+
+???
+
+Recently updated - the go-to place for documentation, examples and articles
+Frameworks for styling and extending shiny apps
+Gallery of examples to explore what's possible
+
+---
+background-image: url(https://github.com/yihui/xaringan/releases/download/v0.0.2/karl-moustache.jpg)
+---
+class: center, middle
+
+# Thank you!
+
+Feel free to get in touch :-)
+
+.pull-left[
+&lt;img src="https://image.flaticon.com/icons/svg/12/12195.svg" style="width: 25px;"/&gt;
+[www.joncalder.co.za](http://joncalder.co.za)
+
+&lt;img src="https://image.flaticon.com/icons/svg/34/34400.svg" style="width: 25px;"/&gt;
+[jonmcalder@gmail.com]("mailto:jonmcalder@gmail.com")
+]
+
+.pull-right[
+&lt;img src="https://image.flaticon.com/icons/svg/25/25231.svg" style="width: 25px;"/&gt;
+[@jonmcalder](http://github.com/jonmcalder)
+
+&lt;img src="https://image.flaticon.com/icons/png/512/8/8800.png" style="width: 25px;"/&gt;
+[@jonmcalder](http://twitter.com/jonmcalder)
+]
+
+&lt;br&gt;
+&lt;br&gt;
+
+Slides created with [**xaringan**](https://github.com/yihui/xaringan).
+
+The chakra comes from [remark.js](https://remarkjs.com), [knitr](http://yihui.name/knitr), and [R Markdown](https://rmarkdown.rstudio.com).
+    </textarea>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"slideNumberFormat": ""
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {window.dispatchEvent(new Event('resize'));});</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  }
+});
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
