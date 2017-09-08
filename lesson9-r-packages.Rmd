@@ -159,9 +159,9 @@ add <- function(x, y) {
 }
 ```
 
-`Load all` changes to the package as before (Ctrl/Cmd + Shift + L).
-
-You should now be able to call the `add()` function from the R console e.g:
+`Load all` (Ctrl/Cmd + Shift + L) now loads the package (this time with the 
+function `add`) and you should now be able to call the `add()` function from the
+R console e.g:
 
 ```{r}
 add(1, 1)
@@ -246,8 +246,14 @@ first line corresponds to the `@title` for the help page and the following
 paragraph is used for the `@description`. Further `@details` are optional. One
 of the best places to get familiar with Roxygen comments and tags is the
 `roxygen2` package vignette on [Generating .Rd
-files](https://cran.r-project.org/web/packages/roxygen2/vignettes/rd.html).
-For now, let's start by initializing `roxygen2` for the `datasci` package:
+files](https://cran.r-project.org/web/packages/roxygen2/vignettes/rd.html). 
+Note that there is are two fashions of roxygen. The newer one is showcased 
+above. It allows you to include markdown syntax for links, bullet points ect.
+You can enable markdown support by including the following line in your 
+`DESCRIPTION` file:
+> Roxygen: list(markdown = TRUE)
+
+Next, let's start by initializing `roxygen2` for the `datasci` package:
 
 ```{r}
 roxygen2::roxygenise()
@@ -291,6 +297,7 @@ Then update the content as shown below:
 ```{r}
 #' Add numbers together
 #'
+#' This is a description of the function. It works like [base::sum()].
 #' @param x First number
 #' @param y Second number
 #'
@@ -322,6 +329,12 @@ It often makes sense for certain utility functions within packages to remain
 unexported since though they may be used/shared by various functions within a
 package, these functions themselves often are directly useable (or useful)
 outside of the package environment.
+However, these functions should nevertheless be documented and can still be 
+accessed by the user using `:::` as follows::
+```{r, eval = FALSE}
+pkgname:::unexported_function()
+```
+
 
 You can now view the help for the `add()` function with:
 
@@ -367,7 +380,8 @@ devtools::use_test("add")
 
 Behind the scenes this will first call `devtools::use_testthat()`, which will
 create `tests/testthat.R`, `tests/testthat/` and add `testthat` to the
-suggested packages. Then it will create the file `tests/testhat/test-add.R`
+suggested packages. That's the infrastructure you need to have set up.
+Then, it will create the file `tests/testhat/test-add.R`
 which contains an example test:
 ```
 context("add")
@@ -376,6 +390,13 @@ test_that("multiplication works", {
   expect_equal(2 * 2, 4)
 })
 ```
+
+Groups of tests live in the same file (e.g. test-add.R). Their name always
+starts with `test-`. Within each `test-` file, you have blocks. Each block is
+a `test_that()` call, which should contain one or more `expect_` calls. In the 
+above example, we tests whether multiplication works. In particular, we check 
+whether two times two is 4. If the two arguments of `expect_equal` are not 
+the same, `expect_equal` throws an error when the test is run.
 
 Let's replace/update the content of `test-add.R` with a few tests for our 
 `add()` function:
