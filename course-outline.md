@@ -24,23 +24,24 @@ The following is an intended lecture schedule but is subject to change! The whol
 |5    |  | Sentiment analysis                 | tidytext | TMR-ch2
 |6     | | Bag-of-words models, tf-idf     | tidytext |TMR-ch4
 |    | Data collection | Accessing APIs  | httr, twitteR, streamR  |
-|7     | Text mining | Topic modelling | tidytext | TMR-ch6
-|8       | Visualization |  | ggplot2 | R4DS-ch3
-|9       | Neural networks | Stochastic gradient descent    |     |
+|7     | Text mining | Topic modelling | tidytext, topicmodels | TMR-ch6
+|8       | Neural networks | Stochastic gradient descent    |     |
 |        |                 | Backpropagation                |     |
 |        |                 | Introducing *keras*            | keras   |
+|9       | Communication | Make your own R package | devtools, roxygen2, knitr, testthat  |
+|        |                | Make your own Shiny app             | shiny
 |10       |  | Convolutional neural networks | keras    |
 |        |               | Computer vision / image classification |   |
 |        |               | Setting up Amazon Web Services for GPU computing |   
-|11       | Communication | Make your own R package | devtools, roxygen2, knitr, testthat  |
-|        |                | Make your own Shiny app             | shiny
-|12      |  | More convolutional neural networks   | keras
+|11      |  | More convolutional neural networks   | keras
+
+Side note: Visualization in ggplot2 (R4DS-ch3) is not included for 2017 but is highly recommended as self study (I originally intended to include a lecture on this, but it became clear there was already a lot of content in the course).  
 
 R4DS = R for Data Science (2017) Hadley Wickham and Garrett Grolemund (available at http://r4ds.had.co.nz/)
 
 TMR = Text Mining with R (2017) Julia Silge and David Robinson (available at http://tidytextmining.com/)
 
-List of packages should be fairly complete. The reference/reading list will be updated as we go.
+The list of packages should be fairly complete. The reference/reading list will be updated as we go.
 
 ### Software
 
@@ -59,7 +60,7 @@ There are two assignments and a small number (2-3) of smaller "exercises" to com
 |Assessment |  General area   |Handed out | Due date | Counts
 |--------|-----|-----|-----|-----
 |Assignment 1  | Recommender systems  |  18 Aug | 5 Sep | 20%
-|Assignment 2  | Text mining  |  28 Aug | 18 Sep  | 20%
+|Assignment 2  | Text mining  |  4 Sep | 20 Sep  | 20%
 |Small exercises | Various | TBA | TBA | 10%
 |Final | Everything | | 26-30 Sep (TBA) | 50%
 
@@ -67,9 +68,9 @@ The final exam will be a computer-based exam in the lab. Part of the exam will b
 
 ### How to approach the module
 
-For the most part I'll be basing each lecture around an jupyter notebook that covers one of the topics. We won't have time in lectures to go through the notebook in great detail. Mostly I'll be trying to cover the main concepts and give you a good understanding of how things work and fit together, without going into too much detail about each line of code. 
+For the most part I'll be basing each lecture around an jupyter notebook that covers one of the topics. Sometimes, we'll go through the notebook in class. We won't have time in lectures to go through the notebook in great detail. Mostly I'll be trying to cover the main concepts and give you a good understanding of how things work and fit together, without going into too much detail about each line of code. For some lecture slots, I will pre-record a screencast of me going through the notebook, and then we will spend the actual lecture time in a "workshop" mode - you can use the time to work on exercises, additional problems, ask questions, etc. In 2017, on the basis of a class poll, we had a roughly 50-50 split between the two types of lectures.
 
-After the lecture you should go through the notebook at your own pace and absorb all the details, making sure you understand what each bit of code does. Making sure you can reproduce the results on your own i.e. without the notebook, is a good test of understanding. Each notebook will have a few exercises at the end for you to try. To use the notebooks directly you need to install the R kernel for jupyter notebook, see [here](https://github.com/IRkernel/IRkernel/blob/master/README.md). I will also make equivalent .Rmd files available (these just aren't as nice and interactive for class).
+Regardless of the lecture type, after the lecture you should go through the notebook at your own pace and absorb all the details, making sure you understand what each bit of code does. Making sure you can reproduce the results on your own i.e. without the notebook, is a good test of understanding. Each notebook will have a few exercises at the end for you to try. To use the notebooks directly you need to install the R kernel for jupyter notebook, see [here](https://github.com/IRkernel/IRkernel/blob/master/README.md). I will also make equivalent .Rmd files available (these just aren't as nice and interactive for class).
 
 The notebooks will generally cover the topics at an introductory-to-intermediate level. I really hope that you will find them interesting enough to want to learn more (maybe not about *every* topic, but more often than not). There is a huge amount of material on the web about all the topics we'll cover. I'll maintain a list of additional readings (the table above already contains some), but you'll benefit a lot from reading widely. If you find something interesting, let everyone know -- perhaps we can discuss it further in class.
 
@@ -79,7 +80,7 @@ I expect that to get the maximum benefit from the class you would probably need 
 
 Please email me (ian.durbach@uct.ac.za) to set up an appointment. My office is Room 5.53 in the Dept of Statistical Sciences. 
 
-In the interests of getting fast feedback to everyone, we'll also be using [Slack](www.slack.com) as a way of communicating during the course. I've set up a group which all participants belong to. Additional options are the chat and forums on [Vula](https://vula.uct.ac.za/portal).
+In the interests of getting fast feedback to everyone, we'll also be using [Slack](https://www.slack.com) as a way of communicating during the course. I've set up a group which all participants belong to. Additional options are the chat and forums on [Vula](https://vula.uct.ac.za/portal).
 
 ### Sources and references
 

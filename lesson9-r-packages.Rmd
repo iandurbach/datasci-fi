@@ -319,6 +319,8 @@ You should then see output in the RStudio build pane as shown below:
 knitr::include_graphics("figures/lesson9/datasci_testing.png")
 ```
 
+Note that all of the code, documentation and test examples outlined here can be found within the [`datasci` package](docs/lesson9-material/packages/datasci).
+
 ## Sharing & Collaboration
 
 Although it hasn't been stated until now, it should be a given that you use Git (or if necessary something else) for version control for the reasons outlined in lesson 1. This should take place long before you get to the stage where you might think about sharing your package with a wider audience.

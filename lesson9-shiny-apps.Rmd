@@ -113,7 +113,7 @@ ui <- fluidPage(
 )
 ```
 
-Your code should now look like [this](https://github.com/jonmcalder/datasci-fi-shiny-packages/tree/master/shiny/1_stocks_layout).
+Your code should now look like [this](docs/lesson9-material/shiny/1_stocks_layout).
 
 Run your app and check the output: 
 
@@ -164,7 +164,7 @@ checkboxInput("log", "Plot y-axis on log scale?",
                     value = FALSE)
 ```
 
-Your code should now look like [this](https://github.com/jonmcalder/datasci-fi-shiny-packages/tree/master/shiny/2_stocks_inputs).
+Your code should now look like [this](docs/lesson9-material/shiny/2_stocks_inputs).
 
 Run your app again and check the output: 
 
@@ -291,7 +291,7 @@ mainPanel(
 )
 ```
 
-Your code should now look like [this](https://github.com/jonmcalder/datasci-fi-shiny-packages/tree/master/shiny/3_stocks_outputs).
+Your code should now look like [this](docs/lesson9-material/shiny/3_stocks_outputs).
 
 ```{r, eval = TRUE, echo = FALSE}
 knitr::include_graphics("figures/lesson9/3_stocks_outputs.png")
@@ -372,7 +372,7 @@ output$stock_volume_plot <- renderPlot({
 })
 ```
 
-Your code should now look like [this](https://github.com/jonmcalder/datasci-fi-shiny-packages/tree/master/shiny/4_stocks_reactivity).
+Your code should now look like [this](docs/lesson9-material/shiny/4_stocks_reactivity).
 
 The app/output should remain identical to before since we have not changed the UI and have simply rewritten the SERVER code to be a little more efficient.
 
@@ -391,7 +391,7 @@ In order to use `plotly` we have to change:
 * wrap the `ggplot2` code in a call to `ggplotly()`
 * add `library(plotly)` to the top of `ui.R`
 
-The final code can be found [here](https://github.com/jonmcalder/datasci-fi-shiny-packages/tree/master/shiny/5_stocks_visualizer).
+The final code can be found [here](docs/lesson9-material/shiny/5_stocks_visualizer).
 
 ## Sharing
 
