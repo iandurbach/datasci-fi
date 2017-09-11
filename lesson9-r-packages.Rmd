@@ -48,7 +48,7 @@ own, an R package is often the best way to do this.
 
 ### Leveraging tooling
 
-The standardised conventions of R packages have lead to standardised tooling,
+The standardized conventions of R packages have lead to standardized tooling,
 particularly in the key areas of documentation and testing. So by buying into
 R's package conventions when bundling up code, you get the benefits of these
 tools.
@@ -247,8 +247,8 @@ paragraph is used for the `@description`. Further `@details` are optional. One
 of the best places to get familiar with Roxygen comments and tags is the
 `roxygen2` package vignette on [Generating .Rd
 files](https://cran.r-project.org/web/packages/roxygen2/vignettes/rd.html). 
-Note that there is are two fashions of roxygen. The newer one is showcased 
-above. It allows you to include markdown syntax for links, bullet points ect.
+Note that there are two fashions of roxygen. The newer one is showcased 
+below. It allows you to include markdown syntax for links, bullet points etc.
 You can enable markdown support by including the following line in your 
 `DESCRIPTION` file:
 > Roxygen: list(markdown = TRUE)
@@ -330,11 +330,10 @@ unexported since though they may be used/shared by various functions within a
 package, these functions themselves often are directly useable (or useful)
 outside of the package environment.
 However, these functions should nevertheless be documented and can still be 
-accessed by the user using `:::` as follows::
+accessed by the user using `:::` as follows:
 ```{r, eval = FALSE}
 pkgname:::unexported_function()
 ```
-
 
 You can now view the help for the `add()` function with:
 
@@ -362,7 +361,7 @@ workflow (`devtools::load_all()`) is very fast, but it does have a limitation
 to also see links, you can instead use Build and Reload (Ctrl/Cmd + Shift +
 B), which will update, install it as part of your package library, and then
 restart R and reload the package. This is slower but more thorough, so is
-worth doing on ocassion after making a number of small (or big) changes to a
+worth doing on occasion after making a number of small (or big) changes to a
 package and/or it's documentation. In order to make sure that all the
 documentation is regenerated as part of the package build process, you'll need
 to configure the Roxygen options within the Build Tools section of Project
@@ -383,6 +382,7 @@ create `tests/testthat.R`, `tests/testthat/` and add `testthat` to the
 suggested packages. That's the infrastructure you need to have set up.
 Then, it will create the file `tests/testhat/test-add.R`
 which contains an example test:
+
 ```
 context("add")
 
@@ -394,7 +394,7 @@ test_that("multiplication works", {
 Groups of tests live in the same file (e.g. test-add.R). Their name always
 starts with `test-`. Within each `test-` file, you have blocks. Each block is
 a `test_that()` call, which should contain one or more `expect_` calls. In the 
-above example, we tests whether multiplication works. In particular, we check 
+above example, we test whether multiplication works. In particular, we check 
 whether two times two is 4. If the two arguments of `expect_equal` are not 
 the same, `expect_equal` throws an error when the test is run.
 
