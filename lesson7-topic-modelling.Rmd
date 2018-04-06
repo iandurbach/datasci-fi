@@ -76,8 +76,8 @@ We now basically have to estimate the parameters of *several* multinomial distri
 Say we have three words in our vocabulary $w_1$, $w_2$, $w_3$. The probability that, in a document of 6 words, word 1 appears four times, word 2 twice, and word 3 not all is, now depends on what "topic" the document belongs to:
 
 * if the document is from topic 1, the probability is $p(w_1|z_1)^4p(w_2|z_1)^2p(w_3|z_1)^0$. The probability that the document is from topic 1 is given by $p(z_1)$. This is *another parameter* that we will have to estimate!
-* if the document is from topic 2, the probability is $p(w_1|z_2)^4p(w_2|z_2)^2p(w_3|z_2)^0$. The probability that the document is from topic 1 is given by $p(z_2)$. 
-* if the document is from topic 3, the probability is $p(w_1|z_3)^4p(w_2|z_3)^2p(w_3|z_3)^0$. The probability that the document is from topic 1 is given by $p(z_3)$. 
+* if the document is from topic 2, the probability is $p(w_1|z_2)^4p(w_2|z_2)^2p(w_3|z_2)^0$. The probability that the document is from topic 2 is given by $p(z_2)$. 
+* if the document is from topic 3, the probability is $p(w_1|z_3)^4p(w_2|z_3)^2p(w_3|z_3)^0$. The probability that the document is from topic 3 is given by $p(z_3)$. 
 
 The joint probability is given by:
 * multiplying together the probability that a document is from a topic (e.g. $p(z_1)$) with the probability of generating the observed frequencies *given that topic* (e.g. $p(w_1|z_1)^4p(w_2|z_1)^2p(w_3|z_1)^0$). This will give three *joint probabilities*, each one gives the probability of being a particular topic *and* getting the observed word frequencies.
@@ -147,7 +147,7 @@ Latent Dirichlet allocation uses the same basic setup as pLSA:
 * *Each document is a mixture of topics*. 
 * *Each topic is a mixture of words*. 
 
-In pLSA there topic distribution (the proportion of topics making up a document) is different for each document. That's why there were $nK$ parameters to estimate. LDA says that the topic distributions are drawn from *another* distribution (!), specifically a Dirichlet distribution with parameters $[a_1,\dots,a_K]$. The Dirichlet distribution is a useful distribution for modelling things like proportions and probabilities that sum to one. This means that we only estimate the $K$ parameters of the Dirichlet, substantially less than the $nK$ parameters estimated by pLSA. This also does away with the need to specifically estimate the probability that the corpus generates document $j$. These are the two main benefits of LDA over pLSA.
+In pLSA the topic distribution (the proportion of topics making up a document) is different for each document. That's why there were $nK$ parameters to estimate. LDA says that the topic distributions are drawn from *another* distribution (!), specifically a Dirichlet distribution with parameters $[a_1,\dots,a_K]$. The Dirichlet distribution is a useful distribution for modelling things like proportions and probabilities that sum to one. This means that we only estimate the $K$ parameters of the Dirichlet, substantially less than the $nK$ parameters estimated by pLSA. This also does away with the need to specifically estimate the probability that the corpus generates document $j$. These are the two main benefits of LDA over pLSA.
 
 To generate a document we would:
 1. Start with a number of words you want to generate (say 100)
@@ -247,7 +247,7 @@ topic2 <- reviews_lda@beta[2,]
 reviews_topics <- tibble(term = term, topic1 = topic1, topic2 = topic2)
 ```
 
-The data frame above is not yet in "tidy" format, because the beta parameters are spread across two columns. We use the `gather()` function to get the data into a tidy format. At the same time, we transform the beta parameters into probabilities by exponentiating each beta
+The data frame above is not yet in "tidy" format, because the beta parameters are spread across two columns. We use the `gather()` function to get the data into a tidy format. At the same time, we transform the beta parameters into probabilities by exponentiating each beta.
 
 
 ```{r}
@@ -288,7 +288,7 @@ top_terms %>%
 
 This visualization shows use the most frequent words used by each topic, and this gives us a way of understanding what the topics are about. The words used by Topic 1 are mostly to do with *Waterworld* (the movie title, actors' names, some plot elements like "mariner", "land", etc). The words used by Topic 2 are mostly about *Taxi Driver*. So, the topic model is clearly picking up that the reviews are largely about two "topics", and that these topics relate to the movies being reviewed. Also note that some words (like "movie" and "film") are common to both topics. This is a benefit of LDA: words can be associated with more than one topic.
 
-A different way of drawing out the differences between topics is to look at which words have the greatest *difference* in beta values between Topic 1 and Topic 2. This could be done in several ways but a good default is to take the advice in TMR anduse the log (base 2) ratio of the two betas: $log2(\beta_2/\beta_1)$. Any log ratio is symmetrical: the log ratio for $\beta_2/\beta_1$ is -1 times the log ratio for $\beta_1/\beta_2$. A base of 2 in the log ratio makes things a bit easier to interpret. The log (base 2) ratio increases by 1 for every doubling of $\beta_2$ (relative to $\beta_1$) leads to an increase in the log ratio of 1. 
+A different way of drawing out the differences between topics is to look at which words have the greatest *difference* in beta values between Topic 1 and Topic 2. This could be done in several ways but a good default is to take the advice in TMR and use the log (base 2) ratio of the two betas: $log2(\beta_2/\beta_1)$. Any log ratio is symmetrical: the log ratio for $\beta_2/\beta_1$ is -1 times the log ratio for $\beta_1/\beta_2$. A base of 2 in the log ratio makes things a bit easier to interpret. The log (base 2) ratio increases by 1 for every doubling of $\beta_2$ (relative to $\beta_1$). 
 
 We calculate the log ratios below and plot the words with the biggest positive and negative log ratios. We first filter out common words, such as those that have a beta greater than 1/1000 in at least one topic.
 
