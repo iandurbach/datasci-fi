@@ -43,6 +43,7 @@ The following is the intended lecture schedule for 2018. The whole course will b
 |11     | | Bag-of-words models, tf-idf     | tidytext |TMR-ch4
 |    | Data collection | Accessing APIs  | httr, twitteR, streamR  |
 |12     | Text mining | Topic modelling | tidytext, topicmodels | TMR-ch6
+
 Side note: Visualization in ggplot2 (R4DS-ch3) is not included but is highly recommended as self study (I originally intended to include a lecture on this, but it became clear there was already a lot of content in the course).  
 
 R4DS = R for Data Science (2017) Hadley Wickham and Garrett Grolemund (available at http://r4ds.had.co.nz/)
