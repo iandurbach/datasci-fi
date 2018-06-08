@@ -34,7 +34,7 @@ The following is the intended lecture schedule for 2018. The whole course will b
 |5       | Communication | Make your own R package | devtools, roxygen2, knitr, testthat  |
 |6       | Neural networks | Convolutional neural networks | keras    |
 |        |               | Computer vision / image classification |   |
-|7        |                | Make your own Shiny app             | shiny
+|7        | Communication | Make your own Shiny app             | shiny
 |8        | Data collection |  Scraping data from the web    | rvest  |
 |      | Text mining  | Working with text     | stringr | R4DS-ch14 
 |9        |  | Analyzing text | tidytext | TMR-ch1, TMR-ch7
