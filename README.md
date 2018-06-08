@@ -1,6 +1,6 @@
 # Data Science for Industry // STA5073Z
 
-Welcome! "Data Science for Industry" is a 24-lecture, 12 credit module in the MSc in Data Science program at the University of Cape Town (see [here](http://www.stats.uct.ac.za/stats/study/postgrad/masters/data-science)) and also, as of 2018, as a University of Cape Town accredited short course.
+Welcome! "Data Science for Industry" is a 24-lecture, 12 credit module in the MSc in Data Science program at the University of Cape Town (see [here](http://www.stats.uct.ac.za/stats/study/postgrad/masters/data-science)) and also offered, as of 2018, as a University of Cape Town accredited short course.
 
 The goal of the module is to provide an applied, hands-on overview of selected topics useful in the working world of data science that are not covered by other modules in the program. Broadly speaking these topics fall into two themes: **workflow/productivity tools and skills** (GitHub, data wrangling, visualization, communication) and **modelling** (recommender systems, text mining, neural networks).
 
