@@ -20,12 +20,12 @@ The following is the intended lecture schedule for 2018. The whole course will b
 
 |Lecture |  General area   |Topics to be covered | R packages | References
 |--------|-----|-------------------------|----------|-------------------
-|1       | Workflow     | R Projects            |   |
+|1        | Wrangling    | Data transformations  | dplyr  | R4DS-ch5 
+|        |              | Relational data, join/merge tables | dplyr | R4DS-ch13
+|        | Workflow           | Setting up Amazon Web Services |   
+|2       | Workflow     | R Projects            |   |
 |        |              | Github                |   |
 |        |              | R Markdown            |   |
-|2        | Wrangling    | Data transformations  | dplyr  | R4DS-ch5 
-|        |              | Relational data, join/merge tables | dplyr | R4DS-ch13
-|        |  Workflow           | Setting up Amazon Web Services |   
 |3        | Recommender systems | User/item-based recommenders |  |
 |        |                     | Matrix factorization |  |
 |4       | Neural networks | Stochastic gradient descent    |     |
