@@ -22,7 +22,6 @@ The following is the intended lecture schedule for 2018. The whole course will b
 |--------|-----|-------------------------|----------|-------------------
 |1        | Wrangling    | Data transformations  | dplyr  | R4DS-ch5 
 |        |              | Relational data, join/merge tables | dplyr | R4DS-ch13
-|        | Workflow           | Setting up Amazon Web Services |   
 |2       | Workflow     | R Projects            |   |
 |        |              | Github                |   |
 |        |              | R Markdown            |   |
@@ -31,6 +30,7 @@ The following is the intended lecture schedule for 2018. The whole course will b
 |4       | Neural networks | Stochastic gradient descent    |     |
 |        |                 | Backpropagation                |     |
 |        |                 | Introducing *keras*            | keras   |
+|        | Workflow           | Setting up Amazon Web Services | 
 |5       | Communication | Make your own R package | devtools, roxygen2, knitr, testthat  |
 |6       | Neural networks | Convolutional neural networks | keras    |
 |        |               | Computer vision / image classification |   |
@@ -68,7 +68,7 @@ There are two assignments to complete during the course. Together these count 50
 |Assessment |  General area   |Handed out | Due date | Counts
 |--------|-----|-----|-----|-----
 |Assignment 1  | Recommender systems  |  Week 3 | Week 6 | 25%
-|Assignment 2  | Neural networks  |  Week 7 | Week 10  | 25%
+|Assignment 2  | Neural networks  |  Week 7 | Week 11  | 25%
 |Final | Everything | | TBA | 50%
 
 The final exam will be a computer-based exam in the lab. Part of the exam will be "open book" and part will be closed.
@@ -77,7 +77,7 @@ The final exam will be a computer-based exam in the lab. Part of the exam will b
 
 Please email me (ian.durbach@uct.ac.za) to set up an appointment. My office is Room 5.53 in the Dept of Statistical Sciences. 
 
-In the interests of getting fast feedback to everyone, we'll also be using [Slack](https://www.slack.com) as a way of communicating during the course. I've set up a group which all participants belong to. Additional options are the chat and forums on [Vula](https://vula.uct.ac.za/portal).
+Course communication will be done using [Vula](https://vula.uct.ac.za/portal).
 
 ### Sources and references
 
