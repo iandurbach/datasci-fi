@@ -1,5 +1,5 @@
 ---
-title: "Lesson 1 // Workflow basics"
+title: "Workflow basics"
 author: ""
 date: ""
 output: github_document
@@ -24,7 +24,7 @@ Each of these can be used in their own right, but their real value comes from us
 
 # R Projects
 
-First introductions to R usually start by asking the new user to enter some commands at the command line, 
+First introductions to R usually start by asking the new user to enter some commands at the command line,
 
 ```{r}
 runif(5) + 3
