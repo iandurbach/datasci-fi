@@ -1,5 +1,5 @@
 ---
-title: "Lesson 9 // Shiny apps"
+title: "Shiny apps"
 author: ""
 date: ""
 output: html_document

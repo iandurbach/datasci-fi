@@ -1,5 +1,5 @@
 ---
-title: "Lesson 3 // Working with text using the stringr package"
+title: "Working with text using the stringr package"
 author: ""
 date: ""
 output: html_document

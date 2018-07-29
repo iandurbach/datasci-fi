@@ -1,5 +1,5 @@
 ---
-title: "Lesson 6 // Bag-of-words models"
+title: "Bag-of-words models"
 author: ""
 date: ""
 output: github_document

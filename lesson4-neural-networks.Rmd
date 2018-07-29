@@ -1,5 +1,5 @@
 ---
-title: "Lesson 8 // Neural networks with keras"
+title: "Neural networks with keras"
 author: ""
 date: ""
 output: html_document

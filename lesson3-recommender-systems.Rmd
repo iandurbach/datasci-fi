@@ -1,5 +1,5 @@
 ---
-title: " Recommender systems"
+title: "Recommender systems"
 author: ""
 date: ""
 output: github_document

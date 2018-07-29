@@ -68,7 +68,7 @@ There are two assignments to complete during the course. Together these count 50
 |Assessment |  General area   |Handed out | Due date | Counts
 |--------|-----|-----|-----|-----
 |Assignment 1  | Recommender systems  |  Week 3 | Week 6 | 25%
-|Assignment 2  | Neural networks  |  Week 7 | Week 11  | 25%
+|Assignment 2  | Neural networks  |  Week 7 | Week 11 | 25%
 |Final | Everything | | TBA | 50%
 
 The final exam will be a computer-based exam in the lab. Part of the exam will be "open book" and part will be closed.

@@ -1,5 +1,5 @@
 ---
-title: "Lesson 4 // Text mining"
+title: "Text mining"
 author: ""
 date: ""
 output: github_document
