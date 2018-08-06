@@ -342,7 +342,7 @@ You can now view the help for the `add()` function with:
 ```
 
 ```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("figures/lesson9/datasci_documentation.png")
+knitr::include_graphics("figures/packages/datasci_documentation.png")
 ```
 
 Obviously this is just a very simple example of function documentation to 
@@ -368,7 +368,7 @@ to configure the Roxygen options within the Build Tools section of Project
 Options in RStudio as shown below:
 
 ```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("figures/lesson9/build_reload_options.png")
+knitr::include_graphics("figures/packages/build_reload_options.png")
 ```
 
 ## Testing
@@ -428,11 +428,11 @@ devtools::test()
 You should then see output in the RStudio build pane as shown below:
 
 ```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("figures/lesson9/datasci_testing.png")
+knitr::include_graphics("figures/packages/datasci_testing.png")
 ```
 
 Note that all of the code, documentation and test examples outlined here can be
-found within the [`datasci` package](docs/lesson9-material/packages/datasci).
+found within the [`datasci` package](docs/packages/datasci).
 
 ## Sharing & Collaboration
 
@@ -447,7 +447,7 @@ the best places to get an overview of this is the [description
 chapter](http://r-pkgs.had.co.nz/description.html) in Hadley's book on R
 packages.
 
-For now we'll just outline a few of the more obvious step to work through.
+For now we'll just outline a few of the more obvious steps to work through.
 
 ### Update package information in the `DESCRIPTION`
 
@@ -567,4 +567,6 @@ can learn by just piecing together how the package authors/maintainers have
 done things. Good candidates are mature and actively maintained `tidyverse`
 packages like [dplyr](https://github.com/tidyverse/dplyr),
 [tidyr](https://github.com/tidyverse/tidyr) and
-[stringr](https://github.com/tidyverse/stringr). NA
+[stringr](https://github.com/tidyverse/stringr).
+
+It's also worth noting that while `devtools` is here to stay, it’s being separated into more manageable pieces under the hood. A crucial part of the refactoring of `devtools` is the [usethis](http://usethis.r-lib.org/) package. It aims to automate many common package and analysis setup tasks (i.e. for both R package development projects and general R projects), and currently overs a number of potential workflow improvements if adopted directly in place of commonly used `devtools` helper functions. Refer to the `usethis` [setup article](http://usethis.r-lib.org/articles/articles/usethis-setup.html) for more info.
