@@ -1,5 +1,5 @@
 ---
-title: "Lesson 3 // Working with text using the stringr package"
+title: "Working with text using the stringr package"
 author: ""
 date: ""
 output: html_document
@@ -24,7 +24,7 @@ In this lesson we'll:
     + replace the matched part of a string with a new string
     + split up strings by some criterion
 
-For further reading, I strongly recommend [this chapter](http://r4ds.had.co.nz/strings.html) in R4DS, which covers the **stringr** package in quite a bit more detail than I do here. If you are new to regular expressions, there are a number of excellent tutorials online. Start with [this one](https://regexone.com/), and further information is [here](http://www.python-course.eu/re.php) and [here](http://www.regular-expressions.info/tutorial.html). There are many good "cheatsheets" to help you as you go, for example [Pete Freitag's](http://www.petefreitag.com/cheatsheets/regex/). The bible of regular expressions is apparently [this book](https://www.amazon.com/dp/0596528124/), if you really want to get into it!
+For further reading, I strongly recommend [this chapter](http://r4ds.had.co.nz/strings.html) in R4DS, which covers the **stringr** package in quite a bit more detail than I do here. If you are new to regular expressions, there are a number of excellent tutorials online. Start with [this one](https://regexone.com/), and further information is [here](http://www.python-course.eu/re.php) and [here](http://www.regular-expressions.info/tutorial.html). For a tutorial that is slightly more R focussed, there is a Swirl course on Regular Expressions [here](https://github.com/jonmcalder/Regular_Expressions). There are many good "cheatsheets" to help you as you go, for example those by [Pete Freitag](http://www.petefreitag.com/cheatsheets/regex/) or [Ian Kopacka](https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf). The bible of regular expressions is apparently [this book](https://www.amazon.com/dp/0596528124/), if you really want to get into it!
 
 First we load the packages we'll need for the notebook.
 

@@ -1,5 +1,5 @@
 ---
-title: "Lesson 5 // Sentiment analysis"
+title: "Sentiment analysis"
 author: ""
 date: ""
 output: github_document
@@ -52,8 +52,8 @@ tweets <- tweets %>%
   mutate(month = make_date(year(date), month(date)))
 
 # turn into tidy text 
-replace_reg <- "https://t.co/[A-Za-z\\d]+|http://[A-Za-z\\d]+|&amp;|&lt;|&gt;|RT|https"
-unnest_reg <- "([^A-Za-z_\\d#@']|'(?![A-Za-z_\\d#@]))"
+replace_reg <- "(https?:.*?([\\s]|[a-zA-Z0-9]$))|(www:.*?([\\s]|[a-zA-Z0-9]$))|&amp;|&lt;|&gt;|RT"
+unnest_reg <- "[^A-Za-z_\\d#@']"
 tidy_tweets <- tweets %>% 
   filter(!str_detect(text, "^RT")) %>% # remove retweets
   mutate(text = str_replace_all(text, replace_reg, "")) %>% # remove stuff we don't want like links

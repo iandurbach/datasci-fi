@@ -1,5 +1,5 @@
 ---
-title: "Lesson 3 // Web scraping"
+title: "Web scraping"
 author: ""
 date: ""
 output: github_document

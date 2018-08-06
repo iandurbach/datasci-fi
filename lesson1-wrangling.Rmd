@@ -1,5 +1,5 @@
 ---
-title: "Lesson 1 // Data wrangling "
+title: "Data wrangling "
 author: ""
 date: ""
 output: github_document
@@ -35,7 +35,7 @@ In this lesson we'll:
 
 [MovieLens](https://grouplens.org/datasets/movielens/) is a great resource for data on movie ratings. The full dataset has ratings on 40 000 movies by 260 000 users, some 24 million ratings in all. We'll use a smaller dataset with ratings of 9 000 movies by 700 users (100 000 ratings in all). 
 
-Download the file "ml-latest-small.zip" from https://grouplens.org/datasets/movielens/ and unzip it to the *data* directory in your main project folder (make a folder called *data* if you haven't already). You should see four csv files: `links.csv`, `movies.csv`, `ratings.csv`, and `tags.csv`.
+Download the file "ml-latest-small.zip" from https://grouplens.org/datasets/movielens/ and unzip it to the *data* directory in your main project folder (make a folder called *data* if you haven't already). You should see four csv files: `links.csv`, `movies.csv`, `ratings.csv`, and `tags.csv`. You can also do this programmatically in R:
 
 ```{r}
 dir.create("data")
@@ -50,10 +50,10 @@ First let's save the data we downloaded as an .RData object. .RData objects are 
 
 ```{r}
 # read in the csv files
-links <- read.csv("data/ml-latest-small/links.csv")
-movies <- read.csv("data/ml-latest-small/movies.csv")
-ratings <- read.csv("data/ml-latest-small/ratings.csv")
-tags <- read.csv("data/ml-latest-small/tags.csv")
+movies <- read.csv("data/ml-latest-small/movies.csv")  # movie info: title and genre
+ratings <- read.csv("data/ml-latest-small/ratings.csv") # user ratings for each movie
+tags <- read.csv("data/ml-latest-small/tags.csv") # additional user reviews ("tag")
+links <- read.csv("data/ml-latest-small/links.csv") # lookup for imdb movie IDs
 
 # save as .RData
 save(links, movies, ratings, tags, file = "data/movielens-small.RData")
@@ -87,11 +87,11 @@ Tibbles are a special kind of dataframe that work well with tidyverse packages (
 ratings <- as.tibble(ratings)
 ```
 
-A nice feature of tibbles is that if you display them in the console (by typing `ratings`, for example) only the first few rows and columns are shown. Unfortunately this doesn't carry over to jupyter notebook, so I need to explicitly say `print(ratings)` or all the rows are shown.
+A nice feature of tibbles is that if you display them in the console (by typing `ratings`, for example) only the first few rows and columns are shown. 
 
 
 ```{r}
-print(ratings)
+ratings
 ```
 
 Explore some of the variables:
@@ -183,7 +183,6 @@ ratings %>% filter(userId == 1 & rating > 3)
 ## Arranging rows with `arrange()`
 
 Ordering user 1's "liked" movies in descending order of rating (note the use of `desc`):
-
 
 ```{r}
 arrange(u1_likes, desc(rating))
@@ -317,6 +316,15 @@ t()  # transpose
 ratings %>% group_by(userId) %>% summarize(count = n()) %>% head(10)
 ```
 
+You can also pass your own summary functions to the pipe:
+
+```{r}
+# my own function, computes the 60% quantile of a vector
+compute_60q <- function(x){quantile(x, probs = 0.60)}
+# use it in a grouped summary
+ratings %>% group_by(userId) %>% summarize(count = n(), q60 = compute_60q(rating)) %>% head(10)
+```
+
 ## Other uses of `grouped_by()`: grouped filters and grouped mutates
 
 While you'll probably use `group_by()` most often with `summarise()`, it can also be useful when used in conjunction with `filter()` and `mutate()`. Grouped filters perform the filtering within each group. Below we use it to extract each user's favourite movie (or movies, if there's a tie).
@@ -338,9 +346,9 @@ ratings %>%
   select(-movieId, -timestamp, -genres)
 ```
 
-## Putting it all together: extracting a sample set of reviews for Lesson 2
+## Putting it all together: extracting a sample set of reviews
 
-In this section we'll take what we've learned and do something useful: build a 15x20 matrix containing the reviews made on 20 movies by 15 users. We'll use this matrix in the next lesson to build a recommendation system.
+In this section we'll take what we've learned and do something useful: build a 15x20 matrix containing the reviews made on 20 movies by 15 users. We'll use this matrix in one of the next lessons to build a recommendation system.
 
 First, we select the 15 users we want to use. I've chosen to use 15 users with moderately frequent viewing habits (remember there are 700 users and 9000 movies), mainly to make sure there are some (but not too many) empty ratings.
 
@@ -351,7 +359,6 @@ my_users <- users_frq$userId[101:115]
 ```
 
 Next, we select the 20 movies we want to use:
-
 
 ```{r}
 movies_frq <- ratings %>% group_by(movieId) %>% summarize(count = n()) %>% arrange(desc(count))
@@ -366,12 +373,11 @@ ratings_red <- ratings %>% filter(userId %in% my_users, movieId %in% my_movies)
 # and check there are 15 users and 20 movies in the reduced dataset
 n_users <- length(unique(ratings_red$userId))
 n_movies <- length(unique(ratings_red$movieId))
-print(paste("number of users is", n_users))
-print(paste("number of movies is", n_movies))
+paste("number of users is", n_users)
+paste("number of movies is", n_movies)
 ```
 
 Let's see what the 20 movies are:
-
 
 ```{r}
 movies %>% filter(movieId %in% my_movies) %>% select(title)
@@ -379,13 +385,11 @@ movies %>% filter(movieId %in% my_movies) %>% select(title)
 
 However, note all the movie titles are still being kept:
 
-
 ```{r}
 head(levels(ratings_red$title), 10)
 ```
 
 This actually isn't what we want, so let's drop the ones we won't use.
-
 
 ```{r}
 ratings_red <- droplevels(ratings_red)
@@ -394,7 +398,6 @@ levels(ratings_red$title)
 
 We now want to reshape the data frame into a 15x20 matrix i.e.from "long" format to "wide" format. We can do this using the `spread()` verb. 
 
-
 ```{r}
 ratings_red %>% spread(key = movieId, value = rating)
 ```
@@ -402,7 +405,6 @@ ratings_red %>% spread(key = movieId, value = rating)
 The preceding line *doesn't* work: as you can see we land up with more than one row per user. But it is useful as an illustration of `spread()`. Question: why doesn't it work?
 
 Here's the corrected version:
-
 
 ```{r}
 ratings_red %>% select(userId, title, rating) %>% spread(key = title, value = rating)
@@ -426,7 +428,7 @@ We could have got this more simply with a call to `table()`, which creates a two
 table(ratings_red$userId, ratings_red$title)
 ```
 
-Finally, we save our output for use in the next lesson!
+Finally, we save our output for later use!
 
 
 ```{r}
@@ -456,6 +458,9 @@ y <- tribble(
   2, "y2",
   4, "y3"
 )
+
+x 
+y
 ```
 
 ### Mutating joins: `inner_join`, `left_join`, `right_join`, `full_join`
@@ -492,14 +497,12 @@ left_join(y,x)
 
 A **right join** keeps all observations from the right table (second argument).
 
-
 ```{r}
 # note this is the same as left_join(y,x)
 right_join(x,y)
 ```
 
 A **full join** keeps all observations from the left and right table.
-
 
 ```{r}
 full_join(x,y)
@@ -519,21 +522,20 @@ Note that the same *movieId* can appear multiple times in the *ratings* data fra
 
 
 ```{r}
-print(ratings %>% arrange(movieId)) # note duplicate movieIds
+ratings %>% arrange(movieId) # note duplicate movieIds
 ```
 
 But each *movieId* only appears once in the *movies* data frame:
 
-
 ```{r}
-print(movies %>% arrange(movieId)) # note unique movieIds
+movies %>% arrange(movieId) # note unique movieIds
 ```
 
 In this case a left join by the *movieId* key copies across the movie title information (as well as any other information in the *movies* data frame):
 
 
 ```{r}
-print(left_join(ratings, movies, by = "movieId") %>% select(title, everything()))
+left_join(ratings, movies, by = "movieId") %>% select(title, everything())
 ```
 
 ### Filtering joins: `semi_join`, `anti_join`
@@ -566,4 +568,6 @@ anti_join(y,x)
 
 ## Exercises
 
-Do the exercises in [Chapter 5](http://r4ds.had.co.nz/transform.html) (data transformation using the **dplyr** verbs) and [Chapter 13](http://r4ds.had.co.nz/relational-data.html) (on database joins) of R4DS. There are exercises at the end of each major subsection. Do as many of these exercises as you need to feel comfortable with the material - I suggest doing at least the first two of each set of exercises.
+1. Write a function called **my_range** that computes the difference between the 90% and 10% quantiles of a vector, and another function called **my_cov** that computes the coefficient of variation of a vector (defined as the standard deviation divided by mean). Use these functions to work out how "variable"" each movie's ratings are, and hence what the most variable (in the sense of love-them-or-hate-them) movies are. Do the same for users i.e. find out which users give the most variable ratings, in terms of your two variability functions.
+
+2. Do the exercises in [Chapter 5](http://r4ds.had.co.nz/transform.html) (data transformation using the **dplyr** verbs) and [Chapter 13](http://r4ds.had.co.nz/relational-data.html) (on database joins) of R4DS. There are exercises at the end of each major subsection. Do as many of these exercises as you need to feel comfortable with the material - I suggest doing at least the first two of each set of exercises.

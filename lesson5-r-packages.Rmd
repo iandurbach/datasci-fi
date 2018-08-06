@@ -1,5 +1,5 @@
 ---
-title: "Lesson 9 // R Packages"
+title: "R Packages"
 author: ""
 date: ""
 output: html_document

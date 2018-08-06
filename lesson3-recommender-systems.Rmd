@@ -1,5 +1,5 @@
 ---
-title: " Lesson 2 // Recommender systems"
+title: "Recommender systems"
 author: ""
 date: ""
 output: github_document
@@ -492,7 +492,7 @@ rbind(round(predicted_ratings[1,], 1), as.numeric(ratings_wide[1,]))
 
 ### Adding L2 regularization
 
-One trick that can improve the performance of matrix factorization collaborative filtering is to add L2 regularization. L2 regularization adds a penalty term to the function that we're trying to minimize, equal to the sum of the L2 norms over all user and movie factors. This penalizes large parameter values. 
+One trick that can improve the performance of matrix factorization collaborative filtering is to add L2 regularization. L2 regularization adds a penalty term to the function that we're trying to minimize, which penalizes large parameter values. 
 
 We first rewrite the *evaluate_fit* function to make use of L2 regularization:
 
@@ -512,8 +512,7 @@ evaluate_fit_l2 <- function(x, observed_ratings, lambda){
   errors <- (observed_ratings - predicted_ratings) ^ 2 
   
   # L2 norm penalizes large parameter values
-  penalty <- sum(sqrt(apply(user_factors ^ 2, 1, sum))) + 
-    sum(sqrt(apply(movie_factors ^ 2, 2, sum)))
+  penalty <- sqrt(sum(user_factors ^ 2, movie_factors ^ 2))
   
   # model accuracy contains an error term and a weighted penalty 
   accuracy <- sqrt(mean(errors[!is.na(observed_ratings)])) + lambda * penalty
@@ -529,7 +528,7 @@ We now rerun the optimization with this new evaluation function:
 set.seed(10)
 # optimization step
 rec2 <- optim(par = runif(175), evaluate_fit_l2, 
-            lambda = 3e-3, observed_ratings = ratings_wide, control = list(maxit = 100000))
+            lambda = 3e-2, observed_ratings = ratings_wide, control = list(maxit = 100000))
 rec2$convergence
 rec2$value
 ```
@@ -582,8 +581,7 @@ evaluate_fit_l2_bias <- function(x, observed_ratings, lambda){
   errors <- (observed_ratings - predicted_ratings) ^ 2 
   
   # L2 norm penalizes large parameter values (note not applied to bias terms)
-  penalty <- sum(sqrt(apply(user_factors ^ 2, 1, sum))) + 
-    sum(sqrt(apply(movie_factors ^ 2, 2, sum)))
+  penalty <- sqrt(sum(user_factors ^ 2, movie_factors ^ 2))
   
   # model accuracy contains an error term and a weighted penalty 
   sqrt(mean(errors[!is.na(observed_ratings)])) + lambda * penalty
@@ -597,7 +595,7 @@ Again, rerun the optimization:
 set.seed(10)
 # optimization step (note longer parameter vector to include bias)
 rec3 <- optim(par = runif(220), evaluate_fit_l2_bias,
-              observed_ratings = ratings_wide, lambda = 3e-3, control = list(maxit = 100000))
+              observed_ratings = ratings_wide, lambda = 3e-2, control = list(maxit = 100000))
 rec3$convergence
 rec3$value
 ```
@@ -645,3 +643,4 @@ There are a few places in the notebook where an exercise is indicated. Specifica
 2. Implement a k-nearest-neighbours version of item-based collaborative filtering.
 3. Adapt the `recommender_accuracy()` function so that it can be used with an arbitrary number of users and movies.
 4. Experiment with the optimizers used in the matrix factorization collaborative filter.
+5. The course data folder contains a spreadsheet file *course_recommender.xlsx* which captures the modules selected by the MSc Data Science class this year. This is a bit of an artificial example, because students cannot take *all* modules on offer, but we'll ignore this constraint and treat this *student X course* matrix as input data for a recommender system. Build a recommender system that recommends, for any student, which module to take "next". Try out all the approaches we've covered -- user-based, item-based, and matrix factorization-based. Which students are most similar to you? Which courses are most similar?
