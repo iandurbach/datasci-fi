@@ -72,7 +72,7 @@ Even though this is just skeleton code, it is a 'runnable' `shiny` app - though 
 You'll see that you are given an option to use a single file application `app.R` or a multi-file application `ui.R`/`server.R`.
 
 ```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("figures/lesson9/new_shiny_app.png")
+knitr::include_graphics("figures/shiny/new_shiny_app.png")
 ```
 
 Using RStudio's shiny app template (i.e. the process shown above) is a handy way to quickly get started creating shiny apps once you know what you're doing (since it provides you with a simple working example which you can immediately start iterating on and updating with your desired app elements.
@@ -113,12 +113,12 @@ ui <- fluidPage(
 )
 ```
 
-Your code should now look like [this](docs/lesson9-material/shiny/1_stocks_layout).
+Your code should now look like [this](docs/shiny/1_stocks_layout).
 
 Run your app and check the output: 
 
 ```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("figures/lesson9/1_stocks_layout.png")
+knitr::include_graphics("figures/shiny/1_stocks_layout.png")
 ```
 
 Next we'll add some inputs to our `shiny` app.
@@ -128,13 +128,13 @@ Next we'll add some inputs to our `shiny` app.
 The main building blocks for `shiny` apps are `Input` functions and `Output` functions. `Input` functions usually include 'Input' as part of their names e.g. `sliderInput()`, `selectInput()`, `fileInput()` etc.
 
 ```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("figures/lesson9/shiny_inputs.png")
+knitr::include_graphics("figures/shiny/shiny_inputs.png")
 ```
 
 Input functions also generally use the same basic syntax - an `inputId` and a `label`. Both values should be strings and the `inputId` needs to be unique as it is used internally to identify inputs.
 
 ```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("figures/lesson9/input_syntax.png")
+knitr::include_graphics("figures/shiny/input_syntax.png")
 ```
 
 Note that it is 'Id' not 'ID' - this is an easy and frustrating mistake to make.
@@ -164,12 +164,12 @@ checkboxInput("log", "Plot y-axis on log scale?",
                     value = FALSE)
 ```
 
-Your code should now look like [this](docs/lesson9-material/shiny/2_stocks_inputs).
+Your code should now look like [this](docs/shiny/2_stocks_inputs).
 
 Run your app again and check the output: 
 
 ```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("figures/lesson9/2_stocks_inputs.png")
+knitr::include_graphics("figures/shiny/2_stocks_inputs.png")
 ```
 
 Notice that the inputs are functional/useable, but don't do anything yet since there is no output. Next we'll look at adding some outputs and making them dependent on these inputs. However, first we need to source the data that will be processed for these outputs.
@@ -227,25 +227,25 @@ Also note that R expressions should be contained within curly braces {} within e
 From the SERVER:
 
 ```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("figures/lesson9/basic_reactivity.png")
+knitr::include_graphics("figures/shiny/basic_reactivity.png")
 ```
 
 Other shiny render outputs:
 
 ```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("figures/lesson9/render_outputs.png")
+knitr::include_graphics("figures/shiny/render_outputs.png")
 ```
 
 From the UI:
 
 ```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("figures/lesson9/output_syntax.png")
+knitr::include_graphics("figures/shiny/output_syntax.png")
 ```
 
 Other shiny UI outputs:
 
 ```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("figures/lesson9/shiny_outputs.png")
+knitr::include_graphics("figures/shiny/shiny_outputs.png")
 ```
 
 Let's render two plot outputs for our `shiny` app. One for price data, and one for volume data.
@@ -291,10 +291,10 @@ mainPanel(
 )
 ```
 
-Your code should now look like [this](docs/lesson9-material/shiny/3_stocks_outputs).
+Your code should now look like [this](docs/shiny/3_stocks_outputs).
 
 ```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("figures/lesson9/3_stocks_outputs.png")
+knitr::include_graphics("figures/shiny/3_stocks_outputs.png")
 ```
 
 As apps become more complex, they tend to become inefficient and slow. Note how in the current version of our `shiny` app, both of the outputs have to re-filter the data completely each time either the selected stock or date range are changed.
@@ -372,7 +372,7 @@ output$stock_volume_plot <- renderPlot({
 })
 ```
 
-Your code should now look like [this](docs/lesson9-material/shiny/4_stocks_reactivity).
+Your code should now look like [this](docs/shiny/4_stocks_reactivity).
 
 The app/output should remain identical to before since we have not changed the UI and have simply rewritten the SERVER code to be a little more efficient.
 
@@ -391,7 +391,7 @@ In order to use `plotly` we have to change:
 * wrap the `ggplot2` code in a call to `ggplotly()`
 * add `library(plotly)` to the top of `ui.R`
 
-The final code can be found [here](docs/lesson9-material/shiny/5_stocks_visualizer).
+The final code can be found [here](docs/shiny/5_stocks_visualizer).
 
 ## Sharing
 

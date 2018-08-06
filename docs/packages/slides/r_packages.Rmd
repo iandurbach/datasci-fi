@@ -1,12 +1,12 @@
 ---
-title: "R Packages and Shiny"
+title: "R Packages"
 subtitle: ""
 author: "Jon Calder"
-date: "2017/09"
+date: "2018/08"
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    yolo: TRUE
+    yolo: FALSE
     chakra: libs/remark-latest.min.js
     nature:
       highlightStyle: github
@@ -19,19 +19,13 @@ output:
 options(htmltools.dir.version = FALSE)
 ```
 
-background-image: url(img/Derivco.jpg)
+background-image: url(img/libryo_logo.png)
 background-size: 100%
 
 ---
 
-background-image: url(img/Derivco_Jon.jpg)
+background-image: url(img/libryo_illustration.png)
 background-size: 100%
-
----
-
-background-image: url(img/apex-building.jpg)
-
-# Derivco Cape Town
 
 ---
 class: inverse, middle, center
@@ -304,90 +298,6 @@ background-size: 300px
 [Writing R extensions (CRAN)](https://cran.r-project.org/doc/manuals/r-release/R-exts.html)
 
 
-
----
-class: inverse, middle, center
-
-# Shiny - Overview
-
----
-class: center
-
-### Shiny Examples
-
-.pull-left[
-![](img/superzip-example.png)
-![](img/google-charts.png)
-]
-
-.pull-right[
-![](img/bus-dashboard.png)
-![](img/movie-explorer.png)
-]
-
----
-
-# Inputs
-
-![](img/shiny_inputs.png)
-
----
-
-# Inputs
-
-![](img/input_syntax.png)
-
----
-
-# Outputs
-
-![](img/shiny_outputs.png)
-
----
-
-# Outputs
-
-![](img/output_syntax.png)
-
----
-
-# Outputs
-
-![](img/render_outputs.png)
-
----
-
-# Outputs
-
-![](img/render_output_syntax.png)
-
----
-
-# Outputs
-
-![](img/basic_reactivity.png)
-
----
-background-image: url(img/shiny-dev-center.png)
-background-position: 90% 10%
-background-size: 500px
-
-# Learn More
-
-
-## Shiny
-
-[Shiny website](https://shiny.rstudio.com/)
-
-[flexdashboard](http://rmarkdown.rstudio.com/flexdashboard/) / [shinydashboard](https://rstudio.github.io/shinydashboard/)
-
-[Show Me Shiny](https://www.showmeshiny.com/)
-
-???
-
-Recently updated - the go-to place for documentation, examples and articles
-Frameworks for styling and extending shiny apps
-Gallery of examples to explore what's possible
 
 ---
 class: center, middle

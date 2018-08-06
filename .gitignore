@@ -6,3 +6,4 @@
 *.ipynb
 *.md
 *.html
+.DS_Store
