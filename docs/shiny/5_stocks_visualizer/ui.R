@@ -23,9 +23,9 @@ ui <- fluidPage(
       
       dateRangeInput("dates", "Date Range:",
                      start = "2017-01-01",
-                     end = "2017-07-31", 
+                     end = "2018-07-31", 
                      min = "2010-01-01",
-                     max = "2017-07-31"
+                     max = "2018-07-31"
       ),
       
       helpText("Apply a log transformation to y-axis values."),

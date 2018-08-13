@@ -79,7 +79,7 @@ Using RStudio's shiny app template (i.e. the process shown above) is a handy way
 
 For this lesson however, we are instead going to start out with the previously highlighted (four line) skeleton code and build out a `shiny` app from scratch by working through a series of five steps, illustrating the key elements (and reactive paradigm) of `shiny` as we go.
 
-The app will be a simple interactive visualization tool for viewing financial markets price and trade volume data for a number of large technology companies. The data will be downloaded from Google via the [quantmod](https://www.quantmod.com/) package.
+The app will be a simple interactive visualization tool for viewing financial markets price and trade volume data for a number of large technology companies. The data will be downloaded from Yahoo via the [quantmod](https://www.quantmod.com/) package.
 
 ## Layout (Stock Visualizer - 1)
 
@@ -152,9 +152,9 @@ Then we'll add a `dateRangeInput()` for filtering the date range:
 ```{r}
 dateRangeInput("dates", "Date Range:",
                start = "2017-01-01",
-               end = "2017-07-31", 
+               end = "2018-07-31", 
                min = "2010-01-01",
-               max = "2017-07-31")
+               max = "2018-07-31")
 ```
 
 And lastly we'll include a `checkboxInput()` for the log y-axis option:
@@ -184,7 +184,7 @@ Keep in mind that the directory that `app.R` appears in will become the working 
 
 Also be aware that `shiny` will run code placed inside the server function multiple times, which can slow down the app a lot if some of these calls are expensive. If code only needs to be run once at startup, then include it outside of the server function (i.e. at the top of `app.R` or `server.R`).
 
-Below is some code which can be used to download stock data from Google using the `quantmod` package. This could also be done dynamically from within the `shiny` app but in this case since the app is just for illustration and learning purposes it's probably better if we pre-fetch and then save the data to disk. This then means that the app can subsequently be run without an internet connection if necessary.
+Below is some code which can be used to download stock data from Yahoo using the `quantmod` package. This could also be done dynamically from within the `shiny` app but in this case since the app is just for illustration and learning purposes it's probably better if we pre-fetch and then save the data to disk. This then means that the app can subsequently be run without an internet connection if necessary.
 
 ```{r}
 library(quantmod)
@@ -192,14 +192,14 @@ library(purrr)
 library(broom)
 
 start_date <- "2010-01-01"
-end_date <- "2017-07-31"
+end_date <- "2018-07-31"
 stocks <- c("AAPL", "GOOG", "INTC", "FB", "MSFT", "TWTR")
 
 stock_data <- stocks %>% 
   map(
     getSymbols, 
     from = start_date, to = end_date, 
-    auto.assign = FALSE, src = "google"
+    auto.assign = FALSE, src = "yahoo"
   ) %>% 
   map(tidy) %>% 
   setNames(stocks)
