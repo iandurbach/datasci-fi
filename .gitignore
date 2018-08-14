@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 *.zip
-*.ipynb
 *.md
 *.html
+figures/.DS_Store
+*.ipynb
