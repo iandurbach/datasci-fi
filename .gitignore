@@ -5,5 +5,4 @@
 *.zip
 *.md
 *.html
-figures/.DS_Store
 *.ipynb

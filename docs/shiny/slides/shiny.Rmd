@@ -1,0 +1,142 @@
+---
+title: "Shiny"
+subtitle: ""
+author: "Jon Calder"
+date: "2018/08"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    yolo: FALSE
+    chakra: libs/remark-latest.min.js
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: ""
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+background-image: url(img/libryo_logo.png)
+background-size: 100%
+
+---
+
+background-image: url(img/libryo_illustration.png)
+background-size: 100%
+
+---
+class: inverse, middle, center
+
+# Shiny - Overview
+
+---
+class: center
+
+### Shiny Examples
+
+.pull-left[
+![](img/superzip-example.png)
+![](img/google-charts.png)
+]
+
+.pull-right[
+![](img/bus-dashboard.png)
+![](img/movie-explorer.png)
+]
+
+---
+
+# Inputs
+
+![](img/shiny_inputs.png)
+
+---
+
+# Inputs
+
+![](img/input_syntax.png)
+
+---
+
+# Outputs
+
+![](img/shiny_outputs.png)
+
+---
+
+# Outputs
+
+![](img/output_syntax.png)
+
+---
+
+# Outputs
+
+![](img/render_outputs.png)
+
+---
+
+# Outputs
+
+![](img/render_output_syntax.png)
+
+---
+
+# Outputs
+
+![](img/basic_reactivity.png)
+
+---
+background-image: url(img/shiny-dev-center.png)
+background-position: 90% 10%
+background-size: 500px
+
+# Learn More
+
+
+## Shiny
+
+[Shiny website](https://shiny.rstudio.com/)
+
+[flexdashboard](http://rmarkdown.rstudio.com/flexdashboard/) / [shinydashboard](https://rstudio.github.io/shinydashboard/)
+
+[Show Me Shiny](https://www.showmeshiny.com/)
+
+???
+
+Recently updated - the go-to place for documentation, examples and articles
+Frameworks for styling and extending shiny apps
+Gallery of examples to explore what's possible
+
+---
+class: center, middle
+
+# Thank you!
+
+Feel free to get in touch :-)
+
+.pull-left[
+<img src="https://image.flaticon.com/icons/svg/12/12195.svg" style="width: 25px;"/>
+[www.joncalder.co.za](http://joncalder.co.za)
+
+<img src="https://image.flaticon.com/icons/svg/34/34400.svg" style="width: 25px;"/>
+[jonmcalder@gmail.com]("mailto:jonmcalder@gmail.com")
+]
+
+.pull-right[
+<img src="https://image.flaticon.com/icons/svg/25/25231.svg" style="width: 25px;"/>
+[@jonmcalder](http://github.com/jonmcalder)
+
+<img src="https://image.flaticon.com/icons/png/512/8/8800.png" style="width: 25px;"/>
+[@jonmcalder](http://twitter.com/jonmcalder)
+]
+
+<br>
+<br>
+
+Slides created with [**xaringan**](https://github.com/yihui/xaringan).
+
+The chakra comes from [remark.js](https://remarkjs.com), [knitr](http://yihui.name/knitr), and [R Markdown](https://rmarkdown.rstudio.com).
