@@ -32,13 +32,24 @@ There are a lot of excellent sources of neural network information on the web. S
 
 ## Installing Keras
 
-See the instructions [here](https://keras.rstudio.com/). You need to (within R/RStudio):
+The **keras** R package creates a virtual (Python) environment - a named, isolated, working copy of Python with its own files, directories, and paths so that you can work with Python or Python libraries like Theano and Tensorflow from within R. The **keras** package will create the virtual environment for you, but it does mean that you need to have a working version of Python already installed.
+
+Supported versions include:
+* Anaconda Python (Recommended): https://www.continuum.io/downloads
+* Python Software Foundation: https://www.python.org/downloads/release/python-353/
+
+Once you have a Python installation, you can do the rest from R/RStudio. See the instructions [here](https://keras.rstudio.com/). You need to (within R/RStudio):
 
 1. install the keras R package from CRAN as follows:
 ```
 install.packages("keras")
 ```
-2. Install both the core Keras library as well as the TensorFlow backend:
+2. Install both the core Keras library as well as the TensorFlow backend. If you use Anaconda as your Python package manager then you should use:
+```
+library(keras)
+install_keras(method = "conda")
+```
+If you do not use Anaconda then you should use:
 ```
 library(keras)
 install_keras()
@@ -47,18 +58,27 @@ install_keras()
 This will provide you with default CPU-based installations of Keras and TensorFlow. If you want a more customized installation, e.g. if you want to take advantage of NVIDIA GPUs, see the documentation for `install_keras()`. 
 
 
-## Revisiting the Trump tweet classifier
+## Building a Trump tweet classifier
 
-In this section we revisit an example we looked in the notebook on bag-of-words models: trying to use bag-of-words features to predict whether one of Donald Trump's tweets was made before or after he became president. In that notebook we built a classifier using the CART (classification and regression tree) algorithm. Here we'll do the same using a few varieties of feed-forward neural network. 
+In this section we'll be using a few varieties of feed-forward neural network to try to predict whether one of Donald Trump's tweets was made before or after he became president, based on just the words used in the tweet. In a future lesson (part of the text mining part of the course) we construct this dataset and analyse it in more detail. For now, we'll just take the data "as is" and work with it. Let's load and look at the data.
 
-First we load the packages and data we need. I've created a new .RData file containing the same training and test tweets as we used to build the classification tree. These are saved as the data frames `training_tweets` and `test_tweets` respectively. I've included only the tf-idf features and the outcome variable `is_prez` in each data frame.
+```{r}
+library(tidyverse)
+load("data/trump_tfidf.RData")
+```
 
+The `training_tweets` data frame contains 1228 tweets to be used to train our model; the `test_tweets` data frame contains 623 tweets for model testing. Let's have a look at what's inside the training data frame:
+
+```{r}
+head(training_tweets)
+```
+
+Each row in the data represents a tweet, and contains standardised counts for 201 of Donald Trump's most commonly used words. The precise interpretation of the numbers isn't important for now -- we'll deal with these in the section on text mining. For now, think of them as counts (the number of times a particular word in a particular tweet) after a kind of standardisation that adjusts for the fact that some words (like "the") are more likely to appear than other words. Note that we're only using the 201 most popular words, throwing the rest of the words away. A final column `is_prez` indicates the outcome of interest (was the tweet made while he was president, or before).
+
+First we need to load the required libraries. This can be a bit trickier than loading normal R libraries, because R needs to be able to find its way to where you have installed Python, tensorflow, and keras. You may have to do some troubleshooting here, and you may need to manually point R to the virtual environment where keras is installed. Let me know or post to the forum if you run into problems. Ultimately, this should load the `keras` library:
 
 ```{r}
 library(keras)
-library(tidyverse)
-
-load("data/trump_tfidf.RData")
 ```
 
 ### Data preparation
@@ -72,14 +92,12 @@ Here we first split the training data frame into features `x_train` and outcome 
 
 
 ```{r}
-x_train <- as.matrix(training_tweets %>% select(-is_prez), ncol = 201)
-y_train <- as.matrix(1 * (training_tweets %>% select(is_prez)), ncol = 1)
-```
-
-
-```{r}
-x_test <- as.matrix(test_tweets %>% select(-is_prez), ncol = 201)
-y_test <- as.matrix(1 * (test_tweets %>% select(is_prez)), ncol = 1)
+# training data
+x_train <- as.matrix(training_tweets[,1:201], ncol = 201)
+y_train <- as.matrix(1 * (training_tweets[,202]), ncol = 1)
+# test data
+x_test <- as.matrix(test_tweets[,1:201], ncol = 201)
+y_test <- as.matrix(1 * (test_tweets[,202]), ncol = 1)
 ```
 
 ### Basic feed-forward neural network
@@ -313,7 +331,7 @@ model3 %>% evaluate(x_test, y_test, batch_size=32, verbose = 1)
 
 ## Another tutorial: the MNIST dataset
 
-No introduction to neural networks is complete without the MNIST dataset! :) The MNIST dataset is a handwritten digit recognition problem, in which handwritten digits (represented by 28x28 grayscale images) must be classified into one of the 10 digits (0,1,...,9). I included it here to give a quick introduction to multi-class classification. The dataset is included with Keras and can be accessed using the `dataset_mnist()` function. 
+No introduction to neural networks is complete without the MNIST dataset! The MNIST dataset is a handwritten digit recognition problem, in which handwritten digits (represented by 28x28 grayscale images) must be classified into one of the 10 digits (0,1,...,9). I included it here to give a quick introduction to multi-class classification. The dataset is included with Keras and can be accessed using the `dataset_mnist()` function. 
 
 We first load the **imager** package, which has many useful tools for image processing (we just use it to plot a few sample images), and then the data. 
 

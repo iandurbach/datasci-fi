@@ -9,7 +9,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This notebook describes far and away the easiest way to get started using Amazon Web Services, Keras and R (as far as I know). Louis Allett (www.louisaslett.com) has set up Amazon Machine Images (AMIs) containing R, R Studio, Keras, and a bunch of other software you might want. The best thing about these is that you work directly in R Studio, set up and deployment is all through your web browser, and you can connect to your Dropbox account to access your data and save results. This notebook is basically a minimal set of instructions for getting set up and started on one of these images. More detailed instructions and details are available on [Aslett's website](http://www.louisaslett.com/RStudio_AMI/).
+This notebook describes far and away the easiest way to get started using Amazon Web Services, Keras and R (as far as I know). Louis Allett (www.louisaslett.com) has set up Amazon Machine Images (AMIs) containing R, R Studio, Python, and a bunch of other software you might want. The best thing about these is that you work directly in R Studio, set up and deployment is all through your web browser, and you can connect to your Dropbox account to access your data and save results. This notebook is basically a minimal set of instructions for getting set up and started on one of these images. More detailed instructions and details are available on [Aslett's website](http://www.louisaslett.com/RStudio_AMI/).
 
 ## Getting started with Amazon Web Services
 
@@ -17,69 +17,61 @@ This notebook describes far and away the easiest way to get started using Amazon
 Go to [Amazon Web Services](https://aws.amazon.com/free) and "Create a free account". Creating an AWS account is free and gives you immediate access to the AWS "Free Tier". On the Free Tier, you can use a t2.micro instance for up to 750 hours per month free, for 12 months. 
 
 #### Step 2
-Once you have created your account, go to the [AWS Console](https://aws.amazon.com/console/) an log in to AWS. In the top right corner of the screen set your region (I use *EU (Ireland)*).
+Once you have created your account, go to http://www.louisaslett.com/RStudio_AMI/. From the box on the right-hand side of the screen, choose an AMI (I use *EU (Ireland)* but it doesn't really matter). This will take you to the AWS log in page. Log in.
 
 #### Step 3
-Find and select the "EC2" services. The exact way you do this may change from time to time. I click on the orange box in the top left of the screen to bring up the AWS services dashboard, and then find and select "EC2".
+After logging in, you will automatically be taken to a page where you can specify settings for the AMI you selected in the previous step. Here the main thing you need to choose is the type of machine (AWS calls these "instances") you want to work on. More powerful instances are more expensive. The t2.micro instance is free and you should start here. Select this instance (it should be selected by default) and click "Next: Configure Instance Details". 
 
-#### Step 4
-If you just want to set up a basic "t2" instance, you can skip this step. For some kinds of servers (e.g. the "p2" instances used for GPU computing) you need to make a special request for access before you can launch a instance. Select "Limits" from the menu on the left side of the screen. Scroll down until you find "p2.xlarge". If the Current Limit is 0, then click the "Request limit increase" link and fill in the form there. It can take a few hours to get access. See [here](https://aws.amazon.com/blogs/aws/increasing-your/) for more details. Note you cannot launch an instance before your limit is increased beyond zero (you will see a 1 or 2 or whatever your limit is reflected in the Current Limit column).
+##### Step 3.1 (Configuring Instance Details)
+Leave everything as default here and click "Next: Add Storage".
 
-## Setting up your own AWS EC2 instance
+##### Step 3.2 (Adding Storage)
+Recommended step here is to leave as is and click "Next: Add tags". Most instances comes with a root volume of 50Gb, which is more than enough for our needs. You pay for storage space regardless of whether you use it or not, at a rate of about 10 USc per Gb per month. Costs are prorated by the number of hours you have the storage available for i.e. you don't pay for a month if you terminate an instance after a few days. 
 
-#### Step 5
-Go back to the EC2 Dashboard and click the "Launch instance" button.
+##### Step 3.3 (Adding tags)
+Leave everything as default here and click "Next: Configure Security Group".
 
-##### Step 5.1 
-Click "Community AMIs". In the Search box type "R Studio". Find the AMI you want to use and click "Select".
-
-All of the AMIs maintained by Louis Aslet should be described by something like *"Ready to run RStudio + Julia/Python server for statistical computation (www.louisaslett.com). Connect to instance public DNS in web brower (standard port 80), username rstudio and password rstudio"*.
-
-The AMI you want will be called something like *RStudio-1.1.383_R-3.4.2_Julia-0.6.0_CUDA-8_cuDNN-6_ubuntu-16.04-LTS-64bit*, but AMIs with older versions of R might also be there. You can get a quick reference list of AMIs [here](http://www.louisaslett.com/RStudio_AMI/).
-
-##### Step 5.2 
-Choose an Instance Type: scroll down, tick the box for the instance type you want ("t2.micro" is the free-tier option, while "t2.small" and "t2.medium" are good cheaper options costing under $0.05/hour. If you really need more computing power choose "p2.xlarge" but these are much more expensive!). Click "Next: Configure Instance Details".
-
-##### Step 5.3 
-Configure Instance Details: leave everything as default here and click "Next: Add Storage".
-
-##### Step 5.4 
-Add Storage: this step depends on what you'll be using the instance for. Most instances comes with a root volume of 50Gb, which is more than enough for our needs. Note that you pay for storage space regardless of whether you use it or not, at a rate of about 10 USc per Gb per month. Costs are prorated by the number of hours you have the storage available for i.e. you don't pay for a month if you terminate an instance after a few days. Recommended step here is to leave as is and click "Next: Add tags"
-
-##### Step 5.5
-Add Tags: Select "click to add a Name tag". The "Key" box should say *Name*. Add a descriptive label for your instance in the "Value" text box. Then click "Next: Configure Security Group"
-
-##### Step 5.6
-Configure Security Group: This step is quite important as it specifies the IP addresses that can access your instance (bearing in mind you are paying for the instance). We'll add one rule: 
+##### Step 3.4 (Configuring Security Group)
+This step is important as it specifies the IP addresses that can access your instance. We'll add one rule: 
     
     1. Click "Add rule".
     2. Set "Type" to *Custom TCP*, "Protocol" to *TCP*, "Port Range" to *80*. 
     
 You can add or modify security at any stage, for example if you only want to allow your IP address to access the instance. We won't do this here. Click "Launch". 
 
+#### Step 4
+A window will come up "Select an existing key pair or create a new key pair". As you use AWS more, and particularly if you use it to work with private or sensitive data, you will definitely want to set up key pairs to allow you to securely access your instance. The ease-of-use of this AMI comes at some cost to security. That is not too much of a concern when getting started, but it does mean that you **must** change the username and password from "rstudio" (Aslet's defaults) a bit later on (see Step 11). Click "Proceed without a key pair" and tick the box below. Click "Launch instances". On the next screen click "View instances".
 
-#### Step 6
-A window will come up "Select an existing key pair or create a new key pair". As you use AWS more, and particularly if you use it to work with private or sensitive data, you will definitely want to set up key pairs to allow you to securely access your instance. The ease-of-use of this AMI comes at some cost to security. That is not too much of a concern when getting started, but it does mean that you **must** change the username and password from "rstudio" (Aslet's defaults) a bit later on (see Step 11). Click "Proceed without a key pair" and tick the box below. Click "Launch instances".
-
-#### Step 7
-You should get a message saying "Your instances are now launching". Note the box below "Get notified of estimated charges". Now would be a good time to set up a billing alert! Click "View instances" at the bottom of the screen.
-
-#### Step 8
+#### Step 5
 You will then be taken to the "Instances" dashboard, which you can always access by selecting "Instances" from the menu on the left hand side of the screen. The instance you just created will probably say "Initializing", which refers to some checks that are done when an instance is started. These checks can take some time to complete (a few minutes). Wait until the "Status Checks" column says *2/2 checks...*, which means the checks are complete. 
 
 > The Instance dashboard is your "main" page on EC2. It shows you which of your instances are running (green circle, labelled *running*) and which are available but not running (red circle, labelled *stopped*). The running instances are the expensive ones. Do not leave an instance running unless you need to! We need to leave the instance we just created running while we add some software and do the rest of this notebook, but afterwards, remember to come back to this screen and stop the instance! You stop an instance by selecting the box next to its name, clicking the "Actions" button and choosing "Instance state" and "Stop". When you want to start the instance again, do the same thing but choose "Start". When you are totally done with the instance, do the same but choose "Terminate". Once you have terminated an instance you will not be charged anything for it, but of course if you want to do anything you will need to create a whole new instance from scratch. It really boils down to how much you value your time! 
 
-#### Step 9
+#### Step 6
 Once the checks are complete, scroll down and find the "IP v4 Public IP" address. Copy and paste this into a new tab of your web browser. When prompted, enter "rstudio" as both the username and password. You should now see good old R Studio in your browser. You're on the server! 
 
-#### Step 10
+#### Step 7
 You can now work in R Studio as you would normally, except that you are now working on your own AWS instance with, depending on the instance you selected, a lot more computing power at your disposal!
 
-#### Step 11
+#### Step 8
 Carefully read the "Welcome.R" script that appears. This contains a lot of useful information, including how to change your password ("highly recommended"!) and how you can connect the R Studio Server to your Dropbox account and access data and save results that way. 
 
-#### Step 12 (IMPORTANT!!!!)
-When you are done, don't forget to go back to your AWS EC2 dashboard and **Stop** or (preferably) **Terminate** the instance. Otherwise you keep paying!
+#### Step 9
+Install and configure the **keras** R package by entering the following lines one at a time in the R console.
+```
+install.packages("keras")
+library(keras)
+install_keras()
+```
+You are now ready to do whatever modelling you want to do.
 
-#### Step 13 (optional)
+#### Step 10 (IMPORTANT!!!!)
+When you are done, don't forget to go back to your AWS EC2 dashboard and **Stop** or **Terminate** the instance. Stopped instances cost a bit of money, even when stopped (you keep paying for storage) but have the advantage that they can be "started" agin (which means you don't have to go through steps 2-9 each time). Once an instance has been terminated, no costs are incurred but it cannot be started again; it, and anything you stored on it, is gone forever. In any case, you should always remember to **either stop or terminate your instances after use**. Otherwise you keep paying!
+
+### Optional extras
+
 If you are going to use AWS regularly, or use more expensive GPU instances, I strongly recommend finding out how to make use of *spot requests* (https://aws.amazon.com/ec2/spot/). 
+
+If you just want to set up a basic "t2" instance, you can skip this step. For some kinds of servers (e.g. the "p2" instances used for GPU computing) you need to make a special request for access before you can launch a instance. Select "Limits" from the menu on the left side of the screen. Scroll down until you find "p2.xlarge". If the Current Limit is 0, then click the "Request limit increase" link and fill in the form there. It can take a few hours to get access. See [here](https://aws.amazon.com/blogs/aws/increasing-your/) for more details. Note you cannot launch an instance before your limit is increased beyond zero (you will see a 1 or 2 or whatever your limit is reflected in the Current Limit column).
+
+If you are going to use AWS with paid instances (not free ones) its a good idea to set up a billing alert. Unfortunately AWS doesn't allow you to set a hard budget limit (as far as I know), but bill alerts will trigger an email to you tell you that you have spent a certain amount of money. See [here](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/monitor_estimated_charges_with_cloudwatch.html).
