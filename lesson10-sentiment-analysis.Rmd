@@ -38,9 +38,11 @@ options(repr.plot.width=4, repr.plot.height=3) # set plot size in the notebook
 
 Next, we load the .RData file containing the tweets and get the data into tidy text format. These are the same operations we did in the previous notebook, so go back to that notebook if you need more details about what is happening below.
 
+> Note! This notebook has been updated and analyses tweets up to 18 August 2018. The results will look a bit different to the ones in the lecture video, which is from 2017. Comment out the call to load the up-to-2018 tweets if you want it to look like the video!
 
 ```{r}
-load("data/trump-tweets.RData")
+load("data/trump-tweets-2018.RData")
+# load("data/trump-tweets.RData")   ### 2017 version
 
 # make data a tibble
 tweets <- as.tibble(tweets)
@@ -205,7 +207,7 @@ sentiments_per_tweet %>%
   geom_line() + geom_smooth()
 ```
 
- ## Dealing with negation
+## Dealing with negation
  
 One problem we haven't considered yet is what to do with terms like "not good", where a positive word is negated by the use of "not" before it. We need to reverse the sentiment of words that are preceded by negation words like not, never, *etc*.
  

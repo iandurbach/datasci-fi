@@ -29,8 +29,8 @@ Nevertheless, it will be useful to have a rough idea how everything fits togethe
 
 * An HTML file, and hence a web page, consists of two main parts: HTML **tags** and content. HTML tags are the parts of a web page that define how content is formatted and displayed in a web browser. Its easiest to explain with a small example. Below is a minimal HTML file: the tags are the commands within angle brackets e.g. `<head>`. Try copying the text below to a text editor, save as .html, and open in your browser. Tags can be customised with **tag attributes**.
 
----
-```<html>
+```
+<html>
  <head>
   <title>A simple webpage</title>
  </head>
@@ -39,8 +39,8 @@ Nevertheless, it will be useful to have a rough idea how everything fits togethe
   Some content. More <b>very important</b> content.
 
  </body>
-</html>```
----
+</html>
+```
 
 * CSS is **Cascading Style Sheets**, a "style sheet language". A style sheet language is a programming language that controls how certain kinds of documents are structured. CSS is a style sheet language for markup documents like those written using HTML. Style sheets define things like the colour and layout of text and other HTML tags. Separating presentation from content is often useful e.g. multiple HTML pages can share formatting through a shared CSS (.css) file.
 
@@ -50,10 +50,7 @@ Nevertheless, it will be useful to have a rough idea how everything fits togethe
 
 > Please note! Web scraping invariably involves copying data, and thus copyright issues are often involved. Beyond that, automated web scraping software can process data much more quickly that manual web users, placing a strain on host web servers. Scraping may also be against the terms of service of some websites. The bottom line is that the ethics of web scraping is not straightforward, and is evolving. There is lots of useful information on the web about these issues, for example [here](https://medium.com/towards-data-science/ethics-in-web-scraping-b96b18136f01), [here](http://gijn.org/2015/08/12/on-the-ethics-of-web-scraping-and-data-journalism/), and [here](http://gijn.org/2015/08/12/on-the-ethics-of-web-scraping-and-data-journalism/) (reading up on these is one of the exercises at the end of the notebook). 
 
----
-
 First we load the packages we'll need in this workbook.
-
 
 ```{r}
 library(rvest)
@@ -148,7 +145,8 @@ The landing page for a suburb shows summaries for the first 20 houses. At the bo
 
 
 ```{r}
-suburb <- read_html("https://www.property24.com/for-sale/fish-hoek/cape-town/western-cape/9074")
+# if the link below doesn't work, it may be out-of-date... just find another
+suburb <- read_html("https://www.property24.com/for-sale/fish-hoek/western-cape/475")
 suburb_links <- suburb %>% html_nodes("a") %>% html_attr("href") 
 print(suburb_links)
 ```
@@ -157,7 +155,7 @@ Next, we need to identify just those hyperlinks that load pages with house summa
 
 
 ```{r}
-suburb_pages <- str_subset(suburb_links,"(http).*(for-sale).*(9074)")
+suburb_pages <- str_subset(suburb_links,"(http).*(for-sale).*(475)")
 suburb_pages
 ```
 
@@ -169,7 +167,9 @@ house_links <- c()
 for(i in suburb_pages){
   suburb_i <- read_html(i)
   suburb_i_links <- suburb_i %>% html_nodes("a") %>% html_attr("href") 
-  house_links_i <- str_subset(suburb_i_links,"(for-sale).*(9074/)[0-9]")
+  # next line has changed from the 2017 notebook (in the lecture video) because 
+  # property24 changed the way their URLs are structured
+  house_links_i <- str_subset(suburb_i_links,"(for-sale).*(/fish-hoek/western-cape/)[0-9]{4,5}")
   house_links <- c(house_links, house_links_i)
 }
 # remove any duplicates and reorder
@@ -186,7 +186,11 @@ We now read each of those pages and extract the data we want.
 
 ```{r}
 house_data <- data.frame()
-for(i in house_links[1:3]){   # more than 3 and you get blocked
+# unfortunately its quite easy to get blocked (temporarily) by Property24, for
+# example if you make too many request. Just do 2 here for example.
+# Some links don't work nicely, for example where some data is not available. If you 
+# get an error try different indices in the line below
+for(i in house_links[2:3]){   # more than 3 and you get blocked
   
       # read house ad html
   house <- read_html(paste("https://www.property24.com",i, sep=""))
@@ -213,7 +217,7 @@ for(i in house_links[1:3]){   # more than 3 and you get blocked
   house_data <- rbind.data.frame(house_data,this_house)
   
     # random wait avoids excessive requesting
-  Sys.sleep(sample(seq(10, 30, by=1), 1))
+  Sys.sleep(sample(seq(10, 15, by=1), 1))
   
 }
 ```
@@ -269,12 +273,12 @@ for(j in 1:2){
     link <- paste0("http://www.imdb.com/title/tt",this_movie,"/reviews?start=",i)
     movie_imdb <- read_html(link)
     
-    # Used SelectorGadget as the CSS Selector
-    imdb_review <- movie_imdb %>% html_nodes("#pagecontent") %>%
-      html_nodes("div+p") %>%
+    # Used SelectorGadget as the CSS Selector (changed from 2017)
+    imdb_review <- movie_imdb %>% html_nodes(".show-more__control") %>%
       html_text()
-        
-    this_review <- data.frame(imbdId = this_movie, review = imdb_review)
+    
+    this_review <- data.frame(imbdId = this_movie, review = imdb_review,
+                              stringsAsFactors = F)
     reviews <- rbind.data.frame(reviews, this_review)
   }
   
