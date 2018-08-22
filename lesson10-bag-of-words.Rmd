@@ -51,7 +51,8 @@ library(rpart)
 
 options(repr.plot.width=4, repr.plot.height=3) # set plot size in the notebook
 
-load("data/trump-tweets.RData")
+load("data/trump-tweets-2018.RData")
+# load("data/trump-tweets.RData")    ### 2017 version (lecture videos)
 
 # make data a tibble
 tweets <- as.tibble(tweets)
@@ -64,7 +65,7 @@ tweets <- tweets %>%
 
 # take a random sample of 1000 tweets before and after became president
 set.seed(98) #100
-tweets <- tweets %>% group_by(is_prez) %>% sample_n(1000)
+tweets <- tweets %>% group_by(is_prez) %>% sample_n(1000) %>% ungroup()
 
 # turn into tidy text 
 replace_reg <- "(https?:.*?([\\s]|[a-zA-Z0-9]$))|(www:.*?([\\s]|[a-zA-Z0-9]$))|&amp;|&lt;|&gt;|RT"
