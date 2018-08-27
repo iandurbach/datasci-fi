@@ -40,9 +40,10 @@ The following is the intended lecture schedule for 2018. The whole course will b
 |9        |  | Analyzing text | tidytext | TMR-ch1, TMR-ch7
 |        | | Text generation |  | 
 |10    |  | Sentiment analysis                 | tidytext | TMR-ch2
-|11     | | Bag-of-words models, tf-idf     | tidytext |TMR-ch4
-|    | Data collection | Accessing APIs  | httr, twitteR, streamR  |
-|12     | Text mining | Topic modelling | tidytext, topicmodels | TMR-ch6
+|     | | Bag-of-words models, tf-idf     | tidytext |TMR-ch4
+|11     | Text mining | Topic modelling | tidytext, topicmodels | TMR-ch6
+|12    | Data collection | Accessing APIs  | httr, twitteR, streamR  |
+
 
 Side note: Visualization in ggplot2 (R4DS-ch3) is not included but is highly recommended as self study (I originally intended to include a lecture on this, but it became clear there was already a lot of content in the course).  
 
