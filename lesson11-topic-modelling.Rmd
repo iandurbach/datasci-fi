@@ -26,7 +26,7 @@ In this notebook we will:
 
 1. Look at how a topic model attempts to "summarize" the document-term matrix, using a spreadsheet example. Along the way we'll introduce a number of methods for doing topic modelling, and also some fundamental modelling "building blocks" like maximum likelihood.
 2. Describe Latent Dirichlet allocation (LDA), a popular method for doing topic modeling that avoids some of the pitfalls of other methods.
-3. Show how you can do topic modelling with LDA using the **topicmodelling** package, with further analysis done in **tidytext**. We'll create a topic model for a collection of movie reviews.
+3. Show how you can do topic modelling with LDA using the **topicmodels** package, with further analysis done in **tidytext**. We'll create a topic model for a collection of movie reviews.
 
 The code in this lesson borrows heavily from [Chapter 6](http://tidytextmining.com/topicmodeling.html) of TMR, and also contains some of the material on converting between tidy and non-tidy text formats in [Chapter 5](http://tidytextmining.com/dtm.html).
 
@@ -50,11 +50,11 @@ Say we have three words in our vocabulary $w_1$, $w_2$, $w_3$. The probability t
 
 This is a joint probability, and is also the *likelihood*. By the principle of maximum likelihood, we try and find the values of $p(w_1)$, $p(w_2)$, $p(w_3)$ that maximize this likelihood. 
 
-Equivalently, we can find the values of $p(w_1)$, $p(w_2)$, $p(w_3)$ that maximize the *log* of the likelihood, given by $latex  4\log(p(w_1)) + 2\log(p(w_2))$. This is usually easier to do.
+Equivalently, we can find the values of $p(w_1)$, $p(w_2)$, $p(w_3)$ that maximize the *log* of the likelihood, given by $4\log(p(w_1)) + 2\log(p(w_2))$. This is usually easier to do.
 
 Over all $N$ documents, the likelihood we want to maximize is given by 
 
-$$\prod_{j=1}^N \prod_{i=1}^n p(w_i) = \prod_{i=1}^n p(w_i)^{\sum_{j=1}^N f_j(w_i)}$$ 
+$$\prod_{i=1}^n p(w_i)^{\sum_{j=1}^N f_j(w_i)}$$ 
 
 where $f_j(w_i)$ is the observed number of times that word $i$ appears in document $j$.
 
@@ -75,11 +75,12 @@ We now basically have to estimate the parameters of *several* multinomial distri
 
 Say we have three words in our vocabulary $w_1$, $w_2$, $w_3$. The probability that, in a document of 6 words, word 1 appears four times, word 2 twice, and word 3 not all is, now depends on what "topic" the document belongs to:
 
-* if the document is from topic 1, the probability is $p(w_1|z_1)^4p(w_2|z_1)^2p(w_3|z_1)^0$. The probability that the document is from topic 1 is given by $p(z_1)$. This is *another parameter* that we will have to estimate!
+* if the document is from topic 1, the probability is $p(w_1|z_1)^4p(w_2|z_1)^2p(w_3|z_1)^0$. The probability that the document is from topic 1 is given by $p(z_1)$. This is *another parameter* that we will have to estimate.
 * if the document is from topic 2, the probability is $p(w_1|z_2)^4p(w_2|z_2)^2p(w_3|z_2)^0$. The probability that the document is from topic 2 is given by $p(z_2)$. 
 * if the document is from topic 3, the probability is $p(w_1|z_3)^4p(w_2|z_3)^2p(w_3|z_3)^0$. The probability that the document is from topic 3 is given by $p(z_3)$. 
 
 The joint probability is given by:
+
 * multiplying together the probability that a document is from a topic (e.g. $p(z_1)$) with the probability of generating the observed frequencies *given that topic* (e.g. $p(w_1|z_1)^4p(w_2|z_1)^2p(w_3|z_1)^0$). This will give three *joint probabilities*, each one gives the probability of being a particular topic *and* getting the observed word frequencies.
 * adding up the three joint probabilities gives the marginal probability of getting the observed frequencies 
 
@@ -111,6 +112,7 @@ The second of these is as for the mixture of unigrams model, but the first is ne
 A handy way of thinking of pLSA is to think of how it can be used to generate a document, assuming you know the distribution of topics for the document, and probabilities of generating different words conditional on each topic (of course, in reality finding these distributions is the problem that pLSA is trying to solve!).
 
 To generate a document we would:
+
 1. Start with a number of words you want to generate (say 100)
 2. Divide up those "placeholders" for words between topics, in the specified proportions. Say, for example, we want a document with 80% topic 1 and 20% topic 2. 80 of the 100 words will come from topic 1, 20 from topic 2.
 3. Draw 80 words from the conditional probability distribution giving the probability of word *i* appearing given topic 1. 
@@ -150,6 +152,7 @@ Latent Dirichlet allocation uses the same basic setup as pLSA:
 In pLSA the topic distribution (the proportion of topics making up a document) is different for each document. That's why there were $nK$ parameters to estimate. LDA says that the topic distributions are drawn from *another* distribution (!), specifically a Dirichlet distribution with parameters $[a_1,\dots,a_K]$. The Dirichlet distribution is a useful distribution for modelling things like proportions and probabilities that sum to one. This means that we only estimate the $K$ parameters of the Dirichlet, substantially less than the $nK$ parameters estimated by pLSA. This also does away with the need to specifically estimate the probability that the corpus generates document $j$. These are the two main benefits of LDA over pLSA.
 
 To generate a document we would:
+
 1. Start with a number of words you want to generate (say 100)
 2. Draw a vector of proportions by sampling from a Dirichlet distribution with $[a_1,\dots,a_K]$. This might give, for example, 80\% in topic 1 and 20\% for topic 2.
 3. Divide up those "placeholders" for words between topics, in the specified proportions. Say, for example, we want a document with 80% topic 1 and 20% topic 2. 80 of the 100 words will come from topic 1, 20 from topic 2.
@@ -208,7 +211,7 @@ reviews_tdf <- tidy_reviews %>%
 
 Previously we have created our own "wide" versions of the document-term matrix using the `spread()` function. We did this, for example, when building a bag-of-words model in the Lesson 6 notebook. This was fine when building features for a classification tree (using **rpart**), but some R packages require a particular implementation of document-term matrix. One common implementation is the `DocumentTermMatrix` class provided by the **tm** package. 
 
-The **topicmodelling** package, which we use to implement the LDA topic model, requires the document-term matrix to be provided as a `DocumentTermMatrix` object. Fortunately, **tidytext** provides a number of functions for turning "ordinary" document-term matrices into `DocumentTermMatrix` (or other kinds of) objects, and also for going the other way (tidying document-term matrices). This is described in more detail [here](http://tidytextmining.com/dtm.html#cast-dtm). Essentially, we create the `DocumentTermMatrix` object using `cast_dtm()` as shown below.
+The **topicmodels** package, which we use to implement the LDA topic model, requires the document-term matrix to be provided as a `DocumentTermMatrix` object. Fortunately, **tidytext** provides a number of functions for turning "ordinary" document-term matrices into `DocumentTermMatrix` (or other kinds of) objects, and also for going the other way (tidying document-term matrices). This is described in more detail [here](http://tidytextmining.com/dtm.html#cast-dtm). Essentially, we create the `DocumentTermMatrix` object using `cast_dtm()` as shown below.
 
 
 ```{r}
@@ -216,7 +219,7 @@ dtm_reviews <- reviews_tdf %>%
   cast_dtm(reviewId, word, n)
 ```
 
-We can now estimate the parameters of the topic model using LDA. We use the `LDA()` function provided by the package **topicmodelling**. We need to specify the number of latent variables (topics) we wish to use. 
+We can now estimate the parameters of the topic model using LDA. We use the `LDA()` function provided by the package **topicmodels**. We need to specify the number of latent variables (topics) we wish to use. 
 
 Notice that the object that is returned by `LDA()` below has a specific class, the "LDA_VEM" class. This is a so-called "S4" object. R provides a number of different systems for object oriented programming: the main ones are an older, more flexible "S3" object class, and a newer, stricter "S4" class. We don't need to worry about these intricacies, but one important practical difference is that the `$` operator (the way you reference variables within an object e.g. `tweets$text`) is not defined for the S4 class. Instead, you use the `@` operator.
 
