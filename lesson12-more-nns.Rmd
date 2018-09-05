@@ -1,0 +1,257 @@
+---
+title: "More neural networks"
+author: ""
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this lecture I demonstrate the versatility of neural networks by going back to two tasks we tackled earlier in the course -- building a recommender system, and a text classification model -- and showing how these can be done using neural networks. 
+
+The neural network used to build a recommender system introduces **embeddings** a new term for an old concept. Basically we represent each movie, and each user, as a vector of latent variables. The values in these latent variables are learned as part of the optimization procedure. This is exactly what we did when building a recommender system using matrix factorization. 
+
+An "embedding" is a function mapping discrete units (for example, words, users, or movies) to high-dimensional vectors (perhaps 200 to 500 dimensions). The embedding function can be thought of as a lookup table, parameterized by a matrix, with a row for each discrete unit. See [here](https://jjallaire.github.io/deep-learning-with-r-notebooks/notebooks/6.1-using-word-embeddings.nb.html) for a more detailed discussion.
+
+In a previous notebook, we build a bag-of-words text classifier. The bag-of-words model ignores the order in which words appear -- a sentence is defined by the words that appear in it, nothing else. In this notebook, we use a 1-dimensional convolutional neural network that allows use to capture some of the natural ordering that appears in language. Words are represented as lower-dimensional vectors of continuous values i.e. using embeddings.
+
+## Revisiting recommender systems
+
+In this example we build a recommender system for the full "small" MovieLens dataset. Previously we saw how to use matrix decomposition to represent each movie and each user as a vector of latent variables. Here we use neural networks to learn the "weights" in these latent factors. 
+
+Load the required packages and data.
+
+```{r}
+library(tidyverse)
+library(reticulate)
+use_virtualenv("~/tensorflow")
+library(tensorflow)
+library(keras)
+load("data/movielens-small.RData")
+```
+
+In this case we have two embeddings, one for users and one for movies. To use embeddings in keras, you must first transformed the set of discrete units (e.g. movie ids) so that they are contiguous integers. 
+
+```{r}
+ratings <- ratings %>% mutate(userId = -1 + as.numeric(factor(userId)),
+                              movieId = -1 + as.numeric(factor(movieId)))
+```
+
+Specify the number of users and movies in the data set.
+
+```{r}
+n_users <- length(unique(ratings$userId))
+n_movies <- length(unique(ratings$movieId))
+n_users
+n_movies
+```
+
+And choose the number of dimensions to use in each embedding (i.e. the number of latent factors)
+
+```{r}
+n_factors <- 5
+```
+
+Randomly assign 80% of the ratings to the training data and keep the remaining 20% aside as test data.
+
+```{r}
+train_indicator <- (runif(nrow(ratings)) < 0.8)
+training_ratings <- ratings[train_indicator,]
+test_ratings <- ratings[-train_indicator,]
+```
+
+Here we build up the model, using the Keras functional API. The way you build a functional model is quite different to how one builds up the sequential model, and will take a bit of practice to get used to. The main features are:
+
+* A layer instance is callable (on a tensor), and it returns a tensor. 
+* Input tensor(s) and output tensor(s) can then be used to define a Model.
+
+For example, below we specify the shape of our input layers for user and movie embeddings. These are just a single value, representing the index of the user or movie.
+
+```{r}
+user_in <- layer_input(shape = c(1), dtype = 'int64', name = 'user_in')
+movie_in <- layer_input(shape = c(1), dtype = 'int64', name = 'movie_in')
+```
+
+Now, we create the embedding by calling the layer instance (`layer_embedding`) on the input tensor `user_in`. 
+
+```{r}
+user_emb <- user_in %>% layer_embedding(input_dim = n_users, 
+                                        output_dim = n_factors, 
+                                        input_length = 1)
+movie_emb <- movie_in %>% layer_embedding(input_dim = n_movies, 
+                                          output_dim = n_factors, 
+                                          input_length = 1)
+```
+
+This is the same as writing
+```
+user_emb <- layer_embedding(input_dim = n_users, output_dim = n_factors, input_length = 1)(user_in)
+movie_emb <- layer_embedding(input_dim = n_movies, output_dim = n_factors, input_length = 1)(movie_in)
+```
+which is the way you will probably see this done in Python.
+
+We now define how we get our output tensor. This is by taking the embedding layer (i.e. the transformed inputs) and adding some further layers. In this case, we add a single dense hidden layer of 128 neurons, and then connect these up to a single output neuron.
+
+```{r}
+predictions <- layer_concatenate(c(user_emb, movie_emb)) %>%
+  layer_flatten() %>% 
+  layer_dropout(0.3) %>%
+  layer_dense(70, activation='relu') %>% 
+  layer_dropout(0.75) %>%
+  layer_dense(1)
+```
+
+We now get to the second step in the functional model: input and output tensors are can then be used to define a `keras_model`. Note that we have **two** input tensors, one for users and one for movies.
+
+```{r}
+model <- keras_model(c(user_in, movie_in), predictions) 
+```
+
+We now compile the model, fit and evaluate the model in much the same way as before. 
+
+```{r}
+model %>% compile(optimizer='Adam', loss='mse')
+```
+
+```{r}
+model %>% fit(list(training_ratings$userId, training_ratings$movieId), 
+           training_ratings$rating, 
+           batch_size=64, 
+           epoch=2)
+```
+
+```{r}
+model %>% evaluate(list(test_ratings$userId, test_ratings$movieId), 
+                test_ratings$rating)
+```
+
+## Revisiting tweet classification
+
+Previously we used a simple bag-of-words model to predict whether a tweet made by Donald Trump was made before or after he became president. Here we use a CNN to do the same thing. The CNN allows us to exploit some of the relationships that exist between words. 
+
+Load the data and required packages.
+
+```{r}
+library(stringr)
+library(lubridate)
+library(tidytext)
+
+load("data/trump-tweets.RData")
+```
+
+Pre-process the data, as before.
+
+```{r}
+tweets <- as.tibble(tweets)
+# parse the date and add some date related variables
+tweets <- tweets %>% 
+  mutate(text = str_replace_all(text, "@realdonaldtrump", "")) %>%
+  mutate(date = parse_datetime(str_sub(tweets$created_at,5,30), "%b %d %H:%M:%S %z %Y")) %>% 
+  mutate(is_prez = (date > ymd(20161108))) %>%
+  mutate(month = make_date(year(date),month(date)))
+
+# take a sample of 1000 tweets before and after he became president
+tweets <- tweets %>% group_by(is_prez) %>% 
+  sample_n(1000)
+```
+
+```{r}
+max_features <- 200        # choose max_features most popular words
+minlen <- 5                # exclude tweets shorter than this
+maxlen <- 32               # longest tweet (for padding)
+embedding_dims <- 10       # number of dimensions for word embedding
+```
+
+Here we use Keras to tokenize the tweets - this turns each tweet into a vector of integers, each integer representing a word. 
+
+```{r}
+tokenizer = text_tokenizer(num_words = max_features)
+fit_text_tokenizer(tokenizer, tweets$text)
+sequences = tokenizer$texts_to_sequences(tweets$text)
+```
+
+We need to remove tweets with just a single word, or we get an error. I also throw out very short tweets (less than 5 words), but this is not strictly needed.
+
+```{r}
+seq_ok <- unlist(lapply(sequences, length)) > minlen
+# outcome variable (1 = when president, 0 = before)
+y <- as.integer(tweets$is_prez[seq_ok])
+
+# exclude short sequences
+lengthIs <- function(n) function(x) length(x)>n
+sequences <- Filter(lengthIs(minlen), sequences)
+```
+
+We then split up the training and test set.
+
+```{r}
+test <- list()
+train <- list()
+train_id <- sample(1:length(sequences),
+                size = 0.9*length(sequences), 
+                replace=F)
+test$x <-  sequences[-train_id]
+train$x <- sequences[train_id]
+
+train$y <- y[train_id]
+test$y <-  y[-train_id]
+```
+
+Sequences are of different length. We "pad" the shorter sequences with zeros so that all padded sequences are the same length.
+
+```{r}
+x_train <- train$x %>% pad_sequences(maxlen = maxlen)
+x_test <- test$x %>% pad_sequences(maxlen = maxlen)
+```
+
+We can now define the model
+
+```{r}
+model <- keras_model_sequential()
+```
+
+```{r}
+model %>% 
+  # embedding layer maps vocab indices into embedding_dims dimensions
+  layer_embedding(max_features, embedding_dims, input_length = maxlen) %>%
+  # add some dropout
+  layer_dropout(0.2) %>%
+  # convolutional layer
+  layer_conv_1d(
+    filters = 250,
+    kernel_size = 3, 
+    padding = "valid",  # "valid" means no padding, as we did it already
+    activation = "relu", 
+    strides = 1
+  ) %>%
+  layer_global_max_pooling_1d() %>%
+  layer_dense(128) %>%
+  layer_dropout(0.2) %>%
+  layer_activation("relu") %>%
+  layer_dense(1) %>%   # single unit output layer
+  layer_activation("sigmoid")
+```
+
+Compile the model:
+
+```{r}
+model %>% compile(
+  loss = "binary_crossentropy",
+  optimizer = "adam",
+  metrics = "accuracy"
+)
+```
+
+Train and evaluate the model:
+
+```{r}
+model %>%
+  fit(
+    x_train, train$y,
+    batch_size = 32,
+    epochs = 10,
+    validation_data = list(x_test, test$y)
+  )
+```
