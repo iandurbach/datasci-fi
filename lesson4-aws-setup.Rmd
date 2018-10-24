@@ -2,7 +2,7 @@
 title: "Creating your own deep learning R server from scratch"
 author: ""
 date: ""
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}

@@ -147,7 +147,7 @@ The first layer we add specifies both the shape of the input data and the number
 
 We use a rectified linear unit or "relu" activation function to non-linearly transform the pre-activation values (i.e. the weighted sum of inputs to each neuron in this layer). The role of the activation function is to add non-linearity to the neural network and hence provide the flexibility that give neural networks their predictive power (otherwise we'd just have a series of matrix multiplications that we could reduce to a single one). You can read more about activations functions [here](https://www.quora.com/What-is-the-role-of-the-activation-function-in-a-neural-network-How-does-this-function-in-a-human-neural-network-system/answer/Sebastian-Raschka-1). The plot below shows a few popular activation functions:
 
-<img src="figures/lesson8/activations.png" />
+<img src="figures/nnets/activations.png" />
 
 Together, the call to `layer_dense()` and `layer_activation()` define the hidden layer.
 

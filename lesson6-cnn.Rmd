@@ -1,6 +1,6 @@
 ---
 title: "Convolutional neural networks"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -36,10 +36,23 @@ Most people don't have access to their own GPUs, but there are a number of cloud
 
 The MNIST dataset is a handwritten digit recognition problem, in which handwritten digits (represented by 28x28 grayscale images) must be classified into one of the 10 digits (0,1,...,9). I included it here to give a quick introduction to multi-class classification. The dataset is included with Keras and can be accessed using the `dataset_mnist()` function. 
 
-```{r}
+```{r, echo = FALSE}
+# note this is how I load the keras library, you may have to do something different.
+# I suggest 
+library(reticulate)
+use_virtualenv("~/tensorflow")
+library(tensorflow)
 library(keras)
 library(tidyverse)
+```
 
+```{r, eval = FALSE, echo = FALSE}
+# this is the most likely way to load the keras library, but I don't run it (eval = F)
+library(keras)
+library(tidyverse)
+```
+
+```{r}
 mnist <- dataset_mnist()
 ```
 
@@ -330,7 +343,7 @@ model %>% compile(
 model %>% fit(
   x_train, y_train,
   batch_size = 128,
-  epochs = 3,
+  epochs = 1,
   verbose = 1,
   validation_split = 0.2
 )
