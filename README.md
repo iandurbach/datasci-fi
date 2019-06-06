@@ -1,12 +1,12 @@
 # Data Science for Industry // STA5073Z
 
-Welcome! "Data Science for Industry" is a 24-lecture, 12 credit module in the MSc in Data Science program at the University of Cape Town (see [here](http://www.stats.uct.ac.za/stats/study/postgrad/masters/data-science)) and also offered, as of 2018, as a University of Cape Town accredited short course.
+Welcome! "Data Science for Industry" is a 24-lecture, 12 credit module in the MSc in Data Science program at the University of Cape Town (see [here](http://www.stats.uct.ac.za/stats/study/postgrad/masters/data-science)). A shortened version of the module is also offered, as of 2018, as a University of Cape Town accredited short course. 
 
 The goal of the module is to provide an applied, hands-on overview of selected topics useful in the working world of data science that are not covered by other modules in the program. Broadly speaking these topics fall into two themes: **workflow/productivity tools and skills** (GitHub, data wrangling, visualization, communication) and **modelling** (recommender systems, text mining, neural networks).
 
 ### Lecture format
 
-DSfI lectures will be held over 6 weeks, with 2 double  (1.5 hour) lectures per week. Lectures take place from 16:00 - 17:45pm on Monday and Wednesday afternoons. Students from the Data Science MSc program attend the same classes as those participating in the short course.
+DSfI lectures will be held over 6 weeks, with 2 double  (1.5 hour) lectures per week. Lectures take place from 16:00 - 17:45pm on Monday and Wednesday afternoons. 
 
 For the most part I'll be basing each lecture around a notebook that covers one of the topics below. Sometimes, we'll go through the notebook in class. We won't have time in lectures to go through the notebook in great detail. Mostly I'll be trying to cover the main concepts and give you a good understanding of how things work and fit together, without going into too much detail about each line of code. For some lecture slots, I will pre-record a screencast of me going through the notebook, and then we will spend the actual lecture time in a "workshop" mode - you can use the time to work on exercises, additional problems, ask questions, etc. In 2017, on the basis of a class poll, we had a roughly 50-50 split between the two types of lectures.
 
