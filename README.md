@@ -30,7 +30,7 @@ The following is the intended lecture schedule for 2019. The whole course will b
 |        | Text mining  | Working with text     | stringr | R4DS-ch14 
 |4       | Workflow      | Github      |   |
 |        |           | Cloud computing with AWS | 
-|5        |  | Analyzing text | tidytext | TMR-ch1, TMR-ch7
+|5        | Text mining  | Analyzing text | tidytext | TMR-ch1, TMR-ch7
 |        | | Text generation |  | 
 |     | | Bag-of-words models, tf-idf     | tidytext |TMR-ch4
 |6     | Text mining | Topic modelling | tidytext, topicmodels | TMR-ch6
