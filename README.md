@@ -8,7 +8,7 @@ The goal of the module is to provide an applied, hands-on overview of selected t
 
 DSfI lectures will be held over 6 weeks, with 2 double  (1.5 hour) lectures per week. Lectures take place from 16:00 - 17:45pm on Monday and Wednesday afternoons. 
 
-For the most part I'll be basing each lecture around a notebook that covers one of the topics below. Sometimes, we'll go through the notebook in class. We won't have time in lectures to go through the notebook in great detail. Mostly I'll be trying to cover the main concepts and give you a good understanding of how things work and fit together, without going into too much detail about each line of code. For some lecture slots, I will pre-record a screencast of me going through the notebook, and then we will spend the actual lecture time in a "workshop" mode - you can use the time to work on exercises, additional problems, ask questions, etc. In 2017, on the basis of a class poll, we had a roughly 50-50 split between the two types of lectures.
+For the most part I'll be basing each lecture around a notebook that covers one of the topics below. Sometimes, we'll go through the notebook in class. We won't have time in lectures to go through the notebook in great detail. Mostly I'll be trying to cover the main concepts and give you a good understanding of how things work and fit together, without going into too much detail about each line of code. For some lecture slots, I will pre-record a screencast of me going through the notebook, and then we will spend the actual lecture time in a "workshop" mode - you can use the time to work on exercises, additional problems, ask questions, etc. 
 
 Regardless of the lecture type, after the lecture you should go through the notebook at your own pace and absorb all the details, making sure you understand what each bit of code does. Making sure you can reproduce the results on your own i.e. without the notebook, is a good test of understanding. Each notebook will have a few exercises at the end for you to try.
 
@@ -16,34 +16,34 @@ The notebooks will generally cover the topics at an introductory-to-intermediate
 
 I expect that to get the maximum benefit from the class you would probably need to do about 8 hours of self-study outside of lecture times (not counting assignments). Feedback is welcome (if you feel you're spending way too much time on the course, or feel you're learning way too little/much).
 
-The following is the intended lecture schedule for 2018. The whole course will be conducted using R.
+The following is the intended lecture schedule for 2019. The whole course will be conducted using R.
 
 |Lecture |  General area   |Topics to be covered | R packages | References
 |--------|-----|-------------------------|----------|-------------------
-|1        | Wrangling    | Data transformations  | dplyr  | R4DS-ch5 
+|1       | Wrangling    | Data transformations  | dplyr  | R4DS-ch5 
 |        |              | Relational data, join/merge tables | dplyr | R4DS-ch13
-|2       | Workflow     | R Projects            |   |
-|        |              | Github                |   |
+|        | Workflow     | R Projects            |   |
 |        |              | R Markdown            |   |
-|3        | Recommender systems | User/item-based recommenders |  |
+|2       | Recommender systems | User/item-based recommenders |  |
 |        |                     | Matrix factorization |  |
-|4       | Neural networks | Stochastic gradient descent    |     |
+|3       | Data collection |  Scraping data from the web    | rvest  |
+|        | Text mining  | Working with text     | stringr | R4DS-ch14 
+|4       | Workflow      | Github      |   |
+|        |           | Cloud computing with AWS | 
+|5        |  | Analyzing text | tidytext | TMR-ch1, TMR-ch7
+|        | | Text generation |  | 
+|     | | Bag-of-words models, tf-idf     | tidytext |TMR-ch4
+|6     | Text mining | Topic modelling | tidytext, topicmodels | TMR-ch6
+|7       | Neural networks | Stochastic gradient descent    |     |
 |        |                 | Backpropagation                |     |
 |        |                 | Introducing *keras*            | keras   |
-|        | Workflow           | Setting up Amazon Web Services | 
-|5       | Communication | Make your own R package | devtools, roxygen2, knitr, testthat  |
-|6       | Neural networks | Convolutional neural networks | keras    |
+|8       | Neural networks | Convolutional neural networks | keras    |
 |        |               | Computer vision / image classification |   |
-|7        | Communication | Make your own Shiny app             | shiny
-|8        | Data collection |  Scraping data from the web    | rvest  |
-|      | Text mining  | Working with text     | stringr | R4DS-ch14 
-|9        |  | Analyzing text | tidytext | TMR-ch1, TMR-ch7
-|        | | Text generation |  | 
-|10    |  | Sentiment analysis                 | tidytext | TMR-ch2
-|     | | Bag-of-words models, tf-idf     | tidytext |TMR-ch4
-|11     | Text mining | Topic modelling | tidytext, topicmodels | TMR-ch6
-|12    | Data collection | Accessing APIs  | httr, twitteR, streamR  |
-
+|9       | Communication | Make your own R package | devtools, roxygen2, knitr, testthat  |
+|10      | Communication | Make your own Shiny app             | shiny
+|11    |  | Sentiment analysis                 | tidytext | TMR-ch2
+|12    | Neural networks | Transfer learning  |   |
+|    |  | Best practices  |   |
 
 Side note: Visualization in ggplot2 (R4DS-ch3) is not included but is highly recommended as self study (I originally intended to include a lecture on this, but it became clear there was already a lot of content in the course).  
 
@@ -58,7 +58,7 @@ The list of packages should be fairly complete. The reference/reading list will 
 To get the most out of the course material you should have the following installed:
 
 * Git and GitHub
-* RStudio and R (not too old - I'm using v1.1.383 of RStudio and R 3.4.2, as of 8/6/2018)
+* RStudio and R (not too old - I'm using v1.2.1335 of RStudio and R 3.5.1, as of 15/7/2019)
 
 The last of these is not strictly needed but will make it easier to follow in lectures. We'll also need various R packages but you can install these as needed.
 
