@@ -139,6 +139,7 @@ background-position: 90% 5%
 --
 
 - [R](https://cran.r-project.org/)
+
 --
 
 background-image: url(img/Rlogo.png)
@@ -176,9 +177,29 @@ You can check that you have what you need with:
 library(devtools)
 has_devel()
 ```
+
+--
+
+For additional setup & helper functions:
+
+--
+
+- [usethis](https://github.com/r-lib/usethis)
+
+--
+
+background-image: url(img/usethis.png)
+background-size: 200px
+background-position: 90% 10%
+
+---
+
+# What Do We Need?
+
 --
 
 Then for documentation and testing:
+
 --
 
 - [roxygen2](https://github.com/klutometis/roxygen)
