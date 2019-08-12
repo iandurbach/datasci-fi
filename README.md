@@ -39,7 +39,7 @@ The following is the intended lecture schedule for 2019. The whole course will b
 |        |                 | Introducing *keras*            | keras   |
 |8       | Neural networks | Convolutional neural networks | keras    |
 |        |               | Computer vision / image classification |   |
-|9       | Communication | Make your own R package | devtools, roxygen2, knitr, testthat  |
+|9       | Communication | Make your own R package | devtools, usethis, roxygen2, knitr, testthat  |
 |10      | Communication | Make your own Shiny app             | shiny
 |11    |  | Sentiment analysis                 | tidytext | TMR-ch2
 |12    | Neural networks | Transfer learning  |   |
