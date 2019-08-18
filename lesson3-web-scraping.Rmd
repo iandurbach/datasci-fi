@@ -31,14 +31,14 @@ Nevertheless, it will be useful to have a rough idea how everything fits togethe
 
 ```
 <html>
- <head>
-  <title>A simple webpage</title>
- </head>
- <body>
+<head>
+<title>A simple webpage</title>
+</head>
+<body>
 
-  Some content. More <b>very important</b> content.
+Some content. More <b>very important</b> content.
 
- </body>
+</body>
 </html>
 ```
 
@@ -190,36 +190,37 @@ house_data <- data.frame()
 # example if you make too many request. Just do 2 here for example.
 # Some links don't work nicely, for example where some data is not available. If you 
 # get an error try different indices in the line below
-for(i in house_links[2:3]){   # more than 3 and you get blocked
-  
-      # read house ad html
-  house <- read_html(paste("https://www.property24.com",i, sep=""))
-  
-      # get the ad text 
-  ad <- house %>% html_nodes(css = ".js_readMore") %>% html_text(trim = T)
+# for(i in house_links[2:3]){   # more than 3 and you get blocked
+i <- house_links[1]
 
-    # get house data
-  price <- house %>% html_nodes(css = ".p24_price") %>% html_text(trim = TRUE)
-  erfsize <- house %>% html_nodes(css = ".dropdown-toggle span") 
-  nbeds <- house %>% html_nodes(css = ".p24_text:nth-child(2)") %>% html_text(trim = TRUE) %>% as.numeric()
-  nbaths <- house %>% html_nodes(css = ".p24_text:nth-child(5)") %>% html_text(trim = TRUE) %>% as.numeric()
-  ngar <- house %>% html_nodes(css = ".p24_text:nth-child(8)") %>% html_text(trim = TRUE) %>% as.numeric()
+# read house ad html
+house <- read_html(paste("https://www.property24.com",i, sep=""))
 
-    # if couldn't find data on webpage, replace with NA
-  price <- ifelse(length(price) > 0, price, NA)
-  erfsize <- ifelse(length(erfsize) > 0, html_text(erfsize, trim = TRUE), NA)
-  nbeds <- ifelse(length(nbeds) > 0, nbeds, NA)
-  nbaths <- ifelse(length(nbaths) > 0, nbaths, NA)
-  ngar <- ifelse(length(ngar) > 0, ngar, NA)
-  
-    # store results
-  this_house <- data.frame(price = price, erfsize = erfsize, nbeds = nbeds, nbaths = nbaths, ngar = ngar, ad = ad)
-  house_data <- rbind.data.frame(house_data,this_house)
-  
-    # random wait avoids excessive requesting
-  Sys.sleep(sample(seq(10, 15, by=1), 1))
-  
-}
+# get the ad text 
+ad <- house %>% html_nodes(css = ".js_readMore") %>% html_text(trim = T)
+
+# get house data
+price <- house %>% html_nodes(css = ".p24_price") %>% html_text(trim = TRUE) %>% .[[2]]
+erfsize <- house %>% html_nodes(css = ".dropdown-toggle span") 
+nbeds <- house %>% html_nodes(css = ".p24_featureDetails:nth-child(1) span") %>% html_text(trim = TRUE) %>% as.numeric()
+nbaths <- house %>% html_nodes(css = ".p24_featureDetails:nth-child(2) span") %>% html_text(trim = TRUE) %>% as.numeric()
+ngar <- house %>% html_nodes(css = ".p24_featureDetails:nth-child(3) span") %>% html_text(trim = TRUE) %>% as.numeric()
+
+# if couldn't find data on webpage, replace with NA
+price <- ifelse(length(price) > 0, price, NA)
+erfsize <- ifelse(length(erfsize) > 0, html_text(erfsize, trim = TRUE), NA)
+nbeds <- ifelse(length(nbeds) > 0, nbeds, NA)
+nbaths <- ifelse(length(nbaths) > 0, nbaths, NA)
+ngar <- ifelse(length(ngar) > 0, ngar, NA)
+
+# store results
+this_house <- data.frame(price = price, erfsize = erfsize, nbeds = nbeds, nbaths = nbaths, ngar = ngar, ad = ad)
+house_data <- rbind.data.frame(house_data,this_house)
+
+# random wait avoids excessive requesting
+Sys.sleep(sample(seq(10, 15, by=1), 1))
+
+#}
 ```
 
 View the data
@@ -265,10 +266,10 @@ reviews <- data.frame()
 
 # just get the first two movies to save time
 for(j in 1:2){
-
+  
   this_movie <- imdbId_to_use$imdbId[j]
-
-    # just get the first 50 reviews
+  
+  # just get the first 50 reviews
   for(i in c(0, seq(10, 50, 10))) {
     link <- paste0("http://www.imdb.com/title/tt",this_movie,"/reviews?start=",i)
     movie_imdb <- read_html(link)

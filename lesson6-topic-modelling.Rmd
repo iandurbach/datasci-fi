@@ -130,7 +130,7 @@ The topic probabilities are the same for all documents. Put another way, documen
 
 The pLSA model relaxes this assumption
 
-$$p(w_{ij}) = \sum_{k=1}^K p(w_i,d_j|z_k)p(z_k|d_j)p(d_j)$$
+$$p(w_{ij}) = \sum_{k=1}^K p(w_i|z_k,d_j)p(z_k|d_j)p(d_j)$$
 
 In order to formulate a likelihood function that can be maximized, pLSA needs to respect some probability rules. Specifically, to work out the joint probability that a document $j$ produces a word $i$ the following "ingredients" are needed.
 

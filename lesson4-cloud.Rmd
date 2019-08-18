@@ -1,5 +1,5 @@
 ---
-title: "Creating your own deep learning R server from scratch"
+title: "Cloud computing with R"
 author: ""
 date: ""
 output: html_document
@@ -9,7 +9,42 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This notebook describes far and away the easiest way to get started using Amazon Web Services, Keras and R (as far as I know). Louis Allett (www.louisaslett.com) has set up Amazon Machine Images (AMIs) containing R, R Studio, Python, and a bunch of other software you might want. The best thing about these is that you work directly in R Studio, set up and deployment is all through your web browser, and you can connect to your Dropbox account to access your data and save results. This notebook is basically a minimal set of instructions for getting set up and started on one of these images. More detailed instructions and details are available on [Aslett's website](http://www.louisaslett.com/RStudio_AMI/).
+If you use RStudio on the cloud without using the command line, you have a few options
+
+## RStudio Cloud
+
+This is the fastest and easiest way to use RStudio on the cloud. 
+
+#### Step 1
+Sign up for a shinyapps.io account [here](https://www.shinyapps.io/). The account is free.
+
+#### Step 2
+Go to https://rstudio.cloud/ and sign in using your shinyapps.io username and password.
+
+#### Step 3
+RStudio Cloud is based around the idea of R Projects that we cover in the "workflow" notebook. To start with you'll have no existing projects, so start a new one by clicking on "New Project" and filling out a bit of information about your new project.
+
+#### Step 4
+This automatically starts a remote instance on the RStudio cloud server. You'll see the usual RStudio windows, but now you're working on the cloud rather than your computer. You can install packages, upload and download data, and generally do everything that you would usually do in R. For more information select the "Guide" from the left-hand taskbar.
+
+## Google Colab
+
+Google Colaboratory or Colab is a free service -- all you need is a Google account. By default Colab notebooks use Python, but an R kernel is available that lets you run R. The big advantage of Google Colab is that it offers both CPU and GPU instances at no cost.
+
+#### Step 1
+Go to https://colab.research.google.com/github/IRkernel/. The first time you visit this site you should click on any of the three demos. Later on, you can select any notebook that you have already saved in your Google Drive.
+
+#### Step 2
+Select *File* and *Save a copy in drive*. This saves a copy of the demo notebook to your own Google Drive.
+
+#### Step 3
+Clear the demo code by selecting *Edit* then *Select all cells* then *Delete selected cells*. This clears the notebook. Change the name of the notebook by clicking on the heading *Demo.ipynb* and giving the notebook a new name. You can then add your own code cells or text cells as required.
+
+To use a GPU instance, select *Runtime*, *Change runtime type*, and *Hardware accelerator*. Choose GPU or TPU as required. Only use these if you are doing some kind of analysis that requires these resources.
+
+## Amazon Web Services
+
+Amazon Web Services offer the most flexible of the options we look at, but these can cost money and are potentially tricky to set up. This notebook describes far and away the easiest way to get started using Amazon Web Services, Keras and R (as far as I know). Louis Allett (www.louisaslett.com) has set up Amazon Machine Images (AMIs) containing R, R Studio, Python, and a bunch of other software you might want. The best thing about these is that you work directly in R Studio, set up and deployment is all through your web browser, and you can connect to your Dropbox account to access your data and save results. This notebook is basically a minimal set of instructions for getting set up and started on one of these images. More detailed instructions and details are available on [Aslett's website](http://www.louisaslett.com/RStudio_AMI/).
 
 ## Getting started with Amazon Web Services
 
@@ -68,7 +103,7 @@ You are now ready to do whatever modelling you want to do.
 #### Step 10 (IMPORTANT!!!!)
 When you are done, don't forget to go back to your AWS EC2 dashboard and **Stop** or **Terminate** the instance. Stopped instances cost a bit of money, even when stopped (you keep paying for storage) but have the advantage that they can be "started" agin (which means you don't have to go through steps 2-9 each time). Once an instance has been terminated, no costs are incurred but it cannot be started again; it, and anything you stored on it, is gone forever. In any case, you should always remember to **either stop or terminate your instances after use**. Otherwise you keep paying!
 
-### Optional extras
+#### Optional extras
 
 If you are going to use AWS regularly, or use more expensive GPU instances, I strongly recommend finding out how to make use of *spot requests* (https://aws.amazon.com/ec2/spot/). 
 
