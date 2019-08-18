@@ -1,10 +1,11 @@
 ---
-title: "Shiny"
+title: "Getting to know Shiny"
 subtitle: ""
 author: "Jon Calder"
-date: "2018/08"
+date: "2019/08"
 output:
   xaringan::moon_reader:
+    css: ["xaringan-themer.css"]
     lib_dir: libs
     yolo: FALSE
     chakra: libs/remark-latest.min.js
@@ -17,6 +18,16 @@ output:
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
+library(xaringanthemer)
+mono_accent(
+  base_color = "#45a8ba",
+  link_color = "#e05773",
+  black_color = "#1a2433",
+  header_font_google = google_font("Roboto"),
+  text_font_google   = google_font("Roboto Condensed", "400", "400i"),
+  code_font_google   = google_font("Roboto Mono"),
+  text_font_size = "22px"
+)
 ```
 
 background-image: url(img/libryo_logo.png)
@@ -24,8 +35,13 @@ background-size: 100%
 
 ---
 
-background-image: url(img/libryo_illustration.png)
-background-size: 100%
+background-image: url(img/exercism.png)
+background-size: cover
+
+---
+
+background-image: url(img/rweekly.png)
+background-size: cover
 
 ---
 class: inverse, middle, center
@@ -97,13 +113,19 @@ background-size: 500px
 # Learn More
 
 
-## Shiny
+## Resources
 
 [Shiny website](https://shiny.rstudio.com/)
 
 [flexdashboard](http://rmarkdown.rstudio.com/flexdashboard/) / [shinydashboard](https://rstudio.github.io/shinydashboard/)
 
 [Show Me Shiny](https://www.showmeshiny.com/)
+
+[Shiny User Showcase](https://www.rstudio.com/products/shiny/shiny-user-showcase/)
+
+[Awesome Shiny Apps for Statistics](http://asas.yingjiehu.com/)
+
+[HTML Widgets](http://www.htmlwidgets.org)
 
 ???
 
@@ -137,6 +159,4 @@ Feel free to get in touch :-)
 <br>
 <br>
 
-Slides created with [**xaringan**](https://github.com/yihui/xaringan).
-
-The chakra comes from [remark.js](https://remarkjs.com), [knitr](http://yihui.name/knitr), and [R Markdown](https://rmarkdown.rstudio.com).
+Slides created with [**xaringan**](https://github.com/yihui/xaringan), leveraging [xaringanthemer](https://pkg.garrickadenbuie.com/xaringanthemer/), [remark.js](https://remarkjs.com), [knitr](http://yihui.name/knitr), and [R Markdown](https://rmarkdown.rstudio.com).

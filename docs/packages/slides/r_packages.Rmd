@@ -1,10 +1,11 @@
 ---
-title: "R Packages"
+title: "An introduction <br> to building R Packages"
 subtitle: ""
 author: "Jon Calder"
-date: "2018/08"
+date: "2019/08"
 output:
   xaringan::moon_reader:
+    css: ["xaringan-themer.css"]
     lib_dir: libs
     yolo: FALSE
     chakra: libs/remark-latest.min.js
@@ -17,6 +18,16 @@ output:
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
+library(xaringanthemer)
+mono_accent(
+  base_color = "#45a8ba",
+  link_color = "#e05773",
+  black_color = "#1a2433",
+  header_font_google = google_font("Roboto"),
+  text_font_google   = google_font("Roboto Condensed", "400", "400i"),
+  code_font_google   = google_font("Roboto Mono"),
+  text_font_size = "22px"
+)
 ```
 
 background-image: url(img/libryo_logo.png)
@@ -24,10 +35,16 @@ background-size: 100%
 
 ---
 
-background-image: url(img/libryo_illustration.png)
-background-size: 100%
+background-image: url(img/exercism.png)
+background-size: cover
 
 ---
+
+background-image: url(img/rweekly.png)
+background-size: cover
+
+---
+
 class: inverse, middle, center
 
 # R Packages - Overview
@@ -35,7 +52,7 @@ class: inverse, middle, center
 ---
 background-image: url(img/package-stickers.jpeg)
 background-size: 400px 
-background-position: 90% 15%
+background-position: 95% 15%
 
 --
 
@@ -45,7 +62,7 @@ background-position: 90% 15%
 ## What Do We Need?
 --
 
-## What Are The Basic Steps?
+## What Are The Steps?
 --
 
 ## Documentation
@@ -80,7 +97,7 @@ class: inverse, center, middle
 --
 
 background-image: url(img/minions.webp)
-background-position: 90% 5%
+background-position: 95% 5%
 
 --
 
@@ -122,6 +139,7 @@ background-position: 90% 5%
 --
 
 - [R](https://cran.r-project.org/)
+
 --
 
 background-image: url(img/Rlogo.png)
@@ -136,7 +154,7 @@ background-position: 90% 10%
 
 background-image: url(img/RStudio-Logo.png)
 background-size: 350px
-background-position: 90% 10%
+background-position: 100% 5%
 
 --
 
@@ -159,9 +177,29 @@ You can check that you have what you need with:
 library(devtools)
 has_devel()
 ```
+
+--
+
+For additional setup & helper functions:
+
+--
+
+- [usethis](https://github.com/r-lib/usethis)
+
+--
+
+background-image: url(img/usethis.png)
+background-size: 200px
+background-position: 90% 10%
+
+---
+
+# What Do We Need?
+
 --
 
 Then for documentation and testing:
+
 --
 
 - [roxygen2](https://github.com/klutometis/roxygen)
@@ -289,7 +327,7 @@ background-size: 300px
 
 # Learn More
 
-## R Packages
+### Resources
 
 [R Packages (Hadley Wickham)](http://r-pkgs.had.co.nz/)
 
@@ -297,6 +335,15 @@ background-size: 300px
 
 [Writing R extensions (CRAN)](https://cran.r-project.org/doc/manuals/r-release/R-exts.html)
 
+[Writing an R Package from Scratch (Hilary Parker)](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/)
+
+[Writing an R Package from Scratch (Tomas Westlake)](https://r-mageddon.netlify.com/post/writing-an-r-package-from-scratch/)
+
+[rOpenSci Packages: Development, Maintenance, and Peer Review](https://devguide.ropensci.org/)
+
+[R Packages cheatsheet](https://rawgit.com/rstudio/cheatsheets/master/package-development.pdf)
+
+The [devtools](http://devtools.r-lib.org/), [usethis](https://usethis.r-lib.org/) and [testthat](https://testthat.r-lib.org/) websites
 
 
 ---
@@ -325,6 +372,4 @@ Feel free to get in touch :-)
 <br>
 <br>
 
-Slides created with [**xaringan**](https://github.com/yihui/xaringan).
-
-The chakra comes from [remark.js](https://remarkjs.com), [knitr](http://yihui.name/knitr), and [R Markdown](https://rmarkdown.rstudio.com).
+Slides created with [**xaringan**](https://github.com/yihui/xaringan), leveraging [xaringanthemer](https://pkg.garrickadenbuie.com/xaringanthemer/), [remark.js](https://remarkjs.com), [knitr](http://yihui.name/knitr), and [R Markdown](https://rmarkdown.rstudio.com).

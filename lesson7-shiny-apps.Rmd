@@ -47,7 +47,7 @@ Generally speaking, the UI is fairly static and is responsible for most of the l
 
 Let's now look at a more complex example, which illustrates more of the flexibility and potential of `shiny` apps. It was built by the creator of `shiny` Joe Cheng:
 
-[Scorecard App](https://beta.rstudioconnect.com/jcheng/scorecard-app/)
+[Scorecard App](https://jcheng.shinyapps.io/scorecard-app/)
 
 You can also take a look at the code for the app [here](https://github.com/jcheng5/scorecard-app). Note that the shiny app itself isn't really that complex, but is impressive because it 'shines' visually. It turns out the overwhelming majority of the source code is actually CSS!
 

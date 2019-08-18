@@ -110,19 +110,24 @@ In RStudio you can do this very easily with:
 
 > File -> New Project -> New Directory -> R package
 
-However, lets use `devtools` directly instead:
+However, lets use `usethis` directly instead:
 
 ```{r}
-devtools::create("datasci")
+usethis::create_package("datasci")
 ```
 
-This will create the directory `datasci/` within your current working directory.
-It should contain an empty `R` folder as well as a few other files - 
+Note that this will create the directory `datasci/` within your current working directory, so you may want to use `setwd()` to change to a different directory before running this if you want to create the package somewhere other that your current working directory. Alternatively you can pass a relative or full path as the argument to the function instead of just the package name e.g:
+
+```{r}
+usethis::create_package("~/Development/datasci")
+```
+
+`usethis` will create the `datasci` directory and activate a new project in RStudio. The directory should contain an empty `R` folder as well as a few other files - 
 `DESCRIPTION`, `NAMESPACE`, `.Rbuildignore`, `datasci.Rproj` etc.
 
-Open up the new project in RStudio, and build & reload the package:
+With this new project open in RStudio, you can build & reload the package:
 
-> Build -> Build & Reload (Ctrl/Cmd + Shift + B)
+> Build -> Clean & Rebuild (Ctrl/Cmd + Shift + B)
 
 This will build and install the package, restart your R session, and (re)load
 the package. The package is empty at this point, so this step is fairly
@@ -141,10 +146,10 @@ or:
 devtools::load_all()
 ```
 
-`Load all` and `Build & Reload` actually do slightly different things, but
+`Load all` and `Clean & Rebuild` actually do slightly different things, but
 either is fine for now. `Load all` simulates the process of installing and
 loading a package (but doesn't actually install the package). This makes it
-less thorough but more efficient than `Build & Reload`. We'll revisit the
+less thorough but more efficient than `Clean & Rebuild`. We'll revisit the
 differences between these again when we look at Documentation.
 
 ### Add function(s)
@@ -374,18 +379,16 @@ knitr::include_graphics("figures/packages/build_reload_options.png")
 ## Testing
 
 ```{r}
-devtools::use_test("add")
+usethis::use_test("add")
 ```
 
-Behind the scenes this will first call `devtools::use_testthat()`, which will
+Behind the scenes this will first call `usethis::use_testthat()`, which will
 create `tests/testthat.R`, `tests/testthat/` and add `testthat` to the
 suggested packages. That's the infrastructure you need to have set up.
 Then, it will create the file `tests/testhat/test-add.R`
 which contains an example test:
 
 ```
-context("add")
-
 test_that("multiplication works", {
   expect_equal(2 * 2, 4)
 })
@@ -456,9 +459,9 @@ Package title, description, author information etc.
 ### Add a software license
 
 The two most commonly used software licenses for R packages are the MIT
-license and the GPL3 license. `devtools` includes functions for adding these
+license and the GPL3 license. `usethis` includes functions for adding these
 to a package: `use_mit_license()` and `use_gpl3_license()`. Note that the MIT
-license requires you to include a `LICENSE` file - the `devtools` helper
+license requires you to include a `LICENSE` file - the `usethis` helper
 function will create this file and all you need to do is update the copyright
 holder field with your name. https://tldrlegal.com/ and
 https://choosealicense.com/licenses/ are two good places to get more
@@ -472,14 +475,14 @@ It's a really good idea to create a `README` for your package - especially for
 example if you will be sharing your package on GitHub. The package `README`
 should outline the basics of why someone might want to use your package, how
 they should use your package and how to install your package e.g.
-`devtools::install_github('username/packagename')`.
+`remotes::install_github('username/packagename')`.
 
 The `README` should be in markdown, but if you want to include code examples, 
 it's usually easier to write it with Rmarkdown and then knit to GitHub flavoured
-markdown. `devtools` contains a helper function to assist with this:
+markdown. `usethis` contains a helper function to assist with this:
 
 ```{r}
-devtools::use_readme_rmd()
+usethis::use_readme_rmd()
 ```
 
 This will create a template `README.Rmd` which you can edit and then `knit` to 
@@ -492,11 +495,11 @@ your package. See the
 [section on vignettes in Hadley's book](http://r-pkgs.had.co.nz/vignettes.html)
 for an overview.
 
-Again, `devtools` contains a nifty function to get you started with a template 
+Again, `usethis` contains a nifty function to get you started with a template 
 vignette:
 
 ```{r}
-devtools::use_vignette("my-vignette")
+usethis::use_vignette("my-vignette")
 ```
 
 Another very useful tool is the 
@@ -569,4 +572,6 @@ packages like [dplyr](https://github.com/tidyverse/dplyr),
 [tidyr](https://github.com/tidyverse/tidyr) and
 [stringr](https://github.com/tidyverse/stringr).
 
-It's also worth noting that while `devtools` is here to stay, it’s being separated into more manageable pieces under the hood. A crucial part of the refactoring of `devtools` is the [usethis](http://usethis.r-lib.org/) package. It aims to automate many common package and analysis setup tasks (i.e. for both R package development projects and general R projects), and currently overs a number of potential workflow improvements if adopted directly in place of commonly used `devtools` helper functions. Refer to the `usethis` [setup article](http://usethis.r-lib.org/articles/articles/usethis-setup.html) for more info.
+It's worth noting that while `devtools` is here to stay, it’s being separated into more manageable pieces under the hood. A crucial part of the refactoring of `devtools` is the [usethis](http://usethis.r-lib.org/) package. It aims to automate many common package and analysis setup tasks (i.e. for both R package development projects and general R projects), and offers a number of potential efficiency and/or workflow improvements over previously available `devtools` helper functions which were subsequently deprecated and as of `devtools 2.1` have been removed.
+
+Most of the `usethis` helper functions require minimal setup, but some make provision for further configuration and personalisation. Refer to the `usethis` [setup article](http://usethis.r-lib.org/articles/articles/useths-setup.html) for more info.
