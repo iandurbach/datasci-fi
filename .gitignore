@@ -4,5 +4,7 @@
 .Ruserdata
 *.zip
 *.md
-*.html
-*.ipynb
+ipynb
+.ipynb_checkpoints
+!data/dogscats.zip
+.httr-oauth
