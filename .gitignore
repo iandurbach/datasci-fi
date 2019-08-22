@@ -4,6 +4,7 @@
 .Ruserdata
 *.zip
 *.md
+!slides_07_08_11_12.md
 ipynb
 .ipynb_checkpoints
 !data/dogscats.zip
